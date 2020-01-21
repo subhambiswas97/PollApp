@@ -42,13 +42,8 @@ frontend/node_modelus
 frontend/coverage
 frontend/build
 
-frontend/.DS_Store
-frontend/.env.local
-frontend/.env.development.local
-frontend/.env.test.local
-frontend/.env.production.local
+*.DS_Store
+*.env
 
-frontend/npm-debug.log*
-frontend/yarn-debug.log*
-frontend/yarn-error.log*
-
+*.log
+.mvn/
