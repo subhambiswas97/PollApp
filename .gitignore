@@ -38,7 +38,7 @@ build/
 #Gradle temporary files
 target/
 
-frontend/node_modelus
+frontend/node_modules
 frontend/coverage
 frontend/build
 
