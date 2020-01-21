@@ -46,4 +46,3 @@ frontend/build
 *.env
 
 *.log
-.mvn/
