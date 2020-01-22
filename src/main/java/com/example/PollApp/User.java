@@ -1,19 +1,37 @@
 package com.example.PollApp;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
+@Table(name = "users")
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @NotNull
     private String email;
+
+    @NotNull
     private String firstname;
+
+    @NotNull
     private String lastname;
+
+    @NotNull
     private String password;
     //private String confirmPassword;
 
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("user")
+    private Token token;
+
     public User() {
+
     }
 
     public User(String email, String firstname, String lastname, String password) {
@@ -22,6 +40,22 @@ public class User {
         this.lastname = lastname;
         this.password = password;
         //this.confirmPassword = confirmPassword;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Token getToken() {
+        return token;
+    }
+
+    public void setToken(Token token) {
+        this.token = token;
     }
 
     public String getEmail() {

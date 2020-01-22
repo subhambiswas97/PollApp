@@ -1,4 +1,5 @@
 import React,{Component} from 'react'
+import axios from 'axios'
 
 class LoginPage extends Component {
     constructor(props) {
@@ -21,7 +22,15 @@ class LoginPage extends Component {
     }
 
     submitHandler = (event) => {
-        alert(`${this.state.email} \n ${this.state.password}`)
+        //alert(`${this.state.email} \n ${this.state.password}`)
+        axios.post('/GetToken',this.state)
+        .then(response => {
+            console.log(response);
+            if(response.data.status == 200 ) {
+                this.props.setMethod(response.data.token)
+            }
+        })
+        .catch(error => {console.log(error)});
         event.preventDefault()
     }
     render() {

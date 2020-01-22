@@ -112,7 +112,7 @@ class RegisterPage extends Component {
         else {
             //event.preventDefault()
             //axios.post('https://jsonplaceholder.typicode.com/posts',this.state)
-            axios.post('localhost:8080/Users',this.state)
+            axios.post('http://localhost:8080/Users',this.state)
             .then(response => {console.log(response)})
             .catch(error => {console.log(error)});
             console.log(`${this.state.firstname} \n` + 
