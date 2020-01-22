@@ -10,19 +10,22 @@ class UserDetails extends Component {
         }
     }
 
-    getDetails = () => {
-        axios.post('/GetUser',this.state)
-        .then(response => {
-            console.log(response);
-            return response;
-        }).catch(error => { console.log(error)})
-    }
+    // getDetails = () => {
+        
+    //     axios.post('/GetUser',this.state)
+    //     .then(response => {
+    //         console.log(response);
+    //         return response;
+    //     }).catch(error => { console.log(error)})
+    // }
     render() {
-        let user = this.getDetails();
+        // let user = this.getDetails();
+        // console.log(user)
         return(
             <React.Fragment>
-                Name : {user.firstname} {user.lastname} <br/>
-                Email : {user.email} <br/>
+                Token : {this.state.token}
+                {/* Name : {user.firstname} {user.lastname} <br/>
+                Email : {user.email} <br/> */}
             </React.Fragment>
         )
     }

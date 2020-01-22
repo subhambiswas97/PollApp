@@ -33,7 +33,7 @@ class App extends Component {
   } else {
     return(
       <React.Fragment>
-        <HomePage name={this.userToken}></HomePage>
+        <HomePage token={this.state.userToken}></HomePage>
         <h3>{this.state.userToken.length}</h3>
         <h3>{this.state.userToken}</h3>
       </React.Fragment>
