@@ -1,4 +1,4 @@
-package com.example.PollApp.models;
+package com.pollapp.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -9,7 +9,6 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "tokens")
 public class Token {
-
 
     @Id
     @Column(name = "id")
@@ -24,15 +23,15 @@ public class Token {
     @JsonIgnoreProperties("token")
     private User user;
 
+    public Token() {
+    }
+
     public User getUser() {
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public Token() {
     }
 
     public Long getId() {

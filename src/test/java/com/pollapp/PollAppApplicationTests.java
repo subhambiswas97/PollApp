@@ -1,4 +1,4 @@
-package com.example.PollApp;
+package com.pollapp;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

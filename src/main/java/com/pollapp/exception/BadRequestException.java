@@ -1,4 +1,4 @@
-package com.example.PollApp.exceptions;
+package com.pollapp.exception;
 
 public class BadRequestException extends Exception {
     public BadRequestException(String message) {

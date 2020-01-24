@@ -1,11 +1,11 @@
-package com.example.PollApp.services;
+package com.pollapp.service;
 
-import com.example.PollApp.controllers.PollController;
-import com.example.PollApp.models.LoginCredentials;
-import com.example.PollApp.models.Token;
-import com.example.PollApp.models.User;
-import com.example.PollApp.repositories.TokenRepository;
-import com.example.PollApp.repositories.UserRepository;
+import com.pollapp.controller.UserController;
+import com.pollapp.dto.LoginDTO;
+import com.pollapp.entity.Token;
+import com.pollapp.entity.User;
+import com.pollapp.repository.TokenRepository;
+import com.pollapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +27,7 @@ public class UserService {
     @Autowired
     private TokenRepository tokenRepository;
 
-    static Logger log = java.util.logging.Logger.getLogger(PollController .class.getName());
+    static Logger log = java.util.logging.Logger.getLogger(UserController.class.getName());
 
     public List<User> getUsers() {
         return (List<User>) userRepository.findAll();
@@ -38,23 +38,23 @@ public class UserService {
 
     }
 
-    public boolean validateUser(LoginCredentials loginCredentials) {
-        User user = userRepository.findByEmail(loginCredentials.getEmail());
+    public boolean validateUser(LoginDTO loginDTO) {
+        User user = userRepository.findByEmail(loginDTO.getEmail());
         if(user == null)
             return false;
 
-        if(user.getPassword().equals(loginCredentials.getPassword()))
+        if(user.getPassword().equals(loginDTO.getPassword()))
             return true;
         return false;
     }
 
     public String getUsername(String email) {
-        return userRepository.findByEmail(email).getFirstname();
+        return userRepository.findByEmail(email).getFirstName();
     }
 
-    public String getToken(LoginCredentials loginCredentials) {
+    public String getToken(LoginDTO loginDTO) {
         //log.info("***gettoken 01***");
-        User user = userRepository.findByEmailAndPassword(loginCredentials.getEmail(),loginCredentials.getPassword());
+        User user = userRepository.findByEmailAndPassword(loginDTO.getEmail(), loginDTO.getPassword());
         //log.info("***gettoken 02***");
         if(user == null)
             return null;
@@ -91,7 +91,7 @@ public class UserService {
         return new ResponseEntity<>(user,HttpStatus.OK);
     }
 
-    public void deleteToken(String token) {
+    public void invalidateToken(String token) {
         tokenRepository.deleteByToken(token);
     }
 

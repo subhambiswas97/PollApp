@@ -1,10 +1,11 @@
-package com.example.PollApp.models;
+package com.pollapp.dto;
 
-public class LoginCredentials {
+public class LoginDTO {
+
     private String email;
     private String password;
 
-    public LoginCredentials() {
+    public LoginDTO() {
     }
 
     public String getEmail() {

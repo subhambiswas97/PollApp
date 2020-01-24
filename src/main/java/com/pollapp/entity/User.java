@@ -1,4 +1,4 @@
-package com.example.PollApp.models;
+package com.pollapp.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -14,32 +14,33 @@ public class User {
     private Long id;
 
     @NotNull
+    @Column(name = "email")
     private String email;
 
     @NotNull
-    private String firstname;
+    @Column(name = "first_name")
+    private String firstName;
 
     @NotNull
-    private String lastname;
+    @Column(name = "last_name")
+    private String lastName;
 
     @NotNull
+    @Column(name = "password")
     private String password;
-    //private String confirmPassword;
 
     @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
     @JsonIgnoreProperties("user")
     private Token token;
 
     public User() {
-
     }
 
-    public User(String email, String firstname, String lastname, String password) {
+    public User(String email, String firstName, String lastName, String password) {
         this.email = email;
-        this.firstname = firstname;
-        this.lastname = lastname;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.password = password;
-        //this.confirmPassword = confirmPassword;
     }
 
     public Long getId() {
@@ -66,20 +67,20 @@ public class User {
         this.email = email;
     }
 
-    public String getFirstname() {
-        return firstname;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getLastname() {
-        return lastname;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getPassword() {
@@ -90,13 +91,4 @@ public class User {
         this.password = password;
     }
 
-    /*
-    public String getConfirmPassword() {
-        return confirmPassword;
-    }
-
-    public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
-    }
-     */
 }

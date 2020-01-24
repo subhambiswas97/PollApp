@@ -28,7 +28,7 @@ class HomePage extends Component {
         return (
             <div>
                 <h1>Hello {this.props.token}</h1> <br/>
-                Name : {user.firstname} + {user.lastname} <br/>
+                Name : {user.firstName} + {user.lastName} <br/>
                 Email : {user.email} <br/>
                   {/* <UserDetails token={this.props.token}></UserDetails>   */}
             </div>

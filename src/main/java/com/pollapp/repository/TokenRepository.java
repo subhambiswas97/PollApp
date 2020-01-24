@@ -1,6 +1,6 @@
-package com.example.PollApp.repositories;
+package com.pollapp.repository;
 
-import com.example.PollApp.models.Token;
+import com.pollapp.entity.Token;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

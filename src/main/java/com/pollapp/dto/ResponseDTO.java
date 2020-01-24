@@ -1,10 +1,12 @@
-package com.example.PollApp.models;
+package com.pollapp.dto;
 
-public class Response {
+public class ResponseDTO {
+
     private int status;
+
     private String token;
 
-    public Response() {
+    public ResponseDTO() {
     }
 
     public int getStatus() {

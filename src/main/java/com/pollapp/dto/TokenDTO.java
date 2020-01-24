@@ -1,9 +1,10 @@
-package com.example.PollApp.models;
+package com.pollapp.dto;
 
-public class TokenWrapper {
+public class TokenDTO {
+
     private  String token;
 
-    public TokenWrapper() {
+    public TokenDTO() {
     }
 
     public String getToken() {
