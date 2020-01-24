@@ -1,5 +1,6 @@
-package com.example.PollApp;
+package com.example.PollApp.repositories;
 
+import com.example.PollApp.models.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

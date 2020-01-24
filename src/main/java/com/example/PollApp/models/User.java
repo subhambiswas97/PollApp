@@ -1,4 +1,4 @@
-package com.example.PollApp;
+package com.example.PollApp.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

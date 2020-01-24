@@ -23,13 +23,6 @@ class RegisterPage extends Component {
     }
 
 
-    // validateForm() {
-    //     let valid = true;
-    //     Object.values(errors).forEach(
-    //         (value) => value.length > 0 && (valid = false)
-    //     )
-    //     return valid;
-    // }
 
     fNameHandler = (event) => {
         this.setState({
@@ -45,7 +38,7 @@ class RegisterPage extends Component {
         })
     }
     emailHandler = (event) => {
-        let emailRegExp =  RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+        let emailRegExp =  RegExp(/^[\w-_\.+]*[\w-_\.]\@([\w]+\.)+[\w]+[\w]$/i);
         this.setState({
             email : event.target.value,
             emailError : emailRegExp.test(event.target.value) ? 'Email Incorrect Format' : ''
@@ -67,38 +60,7 @@ class RegisterPage extends Component {
     
     submitHandler = (event) => {
         
-        // let emailRegExp =  RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
-
-        // const {name,value} = event.target;
-        // let errors = this.state.errors;
-        // switch(name) {
-        //     case 'firstname' : 
-        //     this.setState({errors.firstname = value.length<5 ? 'First Name should be 5 characters long.' : ''})
-        //     break;
-        //     case 'lastname' : 
-        //     this.setState({errors.lastname = value.length<5 ? 'Last Name should be 5 characters long.' : ''})
-        //     break;
-        //     case 'email' : 
-        //     this.setState({errors.email = emailRegExp.test(value) ? 'Email Incorrect Format' : ''})
-        //     break;
-        //     case 'password' : 
-        //     this.setState({errors.password = value.length<8 ? 'Password should be 8 characters long.' : ''})
-        //     break;
-        //     case 'confirmPassword' : 
-        //     this.setState({errors.confirmPassword = value != event.target.password.value ? 'Password and Conirm Password must be same.' : ''})
-        //     break;
-        //     default:
-        //     break;
-
-        // }
-
-        // if(this.validateForm(this.state.errors)) {
-        //     alert(`${this.state.firstname} \n` + 
-        //     `${this.state.lastname} \n` + 
-        //     `${this.state.email} \n` + 
-        //     `${this.state.password} \n` + 
-        //     `${this.state.confirmPassword}  `)
-        // }
+        
         if(this.state.firstnameError.length>0)
             alert(this.state.firstnameError)
         else if(this.state.lastnameError.length>0)
@@ -112,7 +74,7 @@ class RegisterPage extends Component {
         else {
             //event.preventDefault()
             //axios.post('https://jsonplaceholder.typicode.com/posts',this.state)
-            axios.post('http://localhost:8080/Users',this.state)
+            axios.post('http://localhost:8080/users',this.state)
             .then(response => {console.log(response)})
             .catch(error => {console.log(error)});
             console.log(`${this.state.firstname} \n` + 

@@ -1,6 +1,6 @@
-package com.example.PollApp;
+package com.example.PollApp.repositories;
 
-import org.springframework.data.jpa.repository.Query;
+import com.example.PollApp.models.User;
 import org.springframework.data.repository.CrudRepository;
 
 public interface UserRepository extends CrudRepository<User,Long > {

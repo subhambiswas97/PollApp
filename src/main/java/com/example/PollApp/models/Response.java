@@ -1,4 +1,4 @@
-package com.example.PollApp;
+package com.example.PollApp.models;
 
 public class Response {
     private int status;

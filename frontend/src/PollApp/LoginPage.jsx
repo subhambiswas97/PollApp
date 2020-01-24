@@ -23,11 +23,11 @@ class LoginPage extends Component {
 
     submitHandler = (event) => {
         //alert(`${this.state.email} \n ${this.state.password}`)
-        axios.post('/GetToken',this.state)
+        axios.post('/gettoken',this.state)
         .then(response => {
             console.log(response);
-            if(response.data.status == 200 ) {
-                this.props.setMethod(response.data.token)
+            if(response.status == 200 ) {
+                this.props.setMethod(response.data)
             }
         })
         .catch(error => {console.log(error)});

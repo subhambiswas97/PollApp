@@ -9,10 +9,11 @@ class HomePage extends Component {
             token : this.props.token,
             data : {}
         }
+        this.getDetails()
     }
     getDetails() {
         
-        axios.post('/GetUser',this.state)
+        axios.post('/getuser',this.state)
         .then(response => {
             console.log(response.data);
             //return response.data;
@@ -22,7 +23,7 @@ class HomePage extends Component {
         }).catch(error => { console.log(error)})
     }
     render() {
-        this.getDetails()
+        //this.getDetails()
         let user = this.state.data
         return (
             <div>
