@@ -6,8 +6,8 @@ class RegisterPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            firstname :'',
-            lastname : '',
+            firstName :'',
+            lastName : '',
             email : '',
             password : '',
             confirmPassword :'',
@@ -26,14 +26,14 @@ class RegisterPage extends Component {
 
     fNameHandler = (event) => {
         this.setState({
-            firstname : event.target.value,
+            firstName : event.target.value,
             firstnameError : event.target.value.length<5 ? 'First Name should be 5 characters long.' : ''
         })
         
     }
     lNameHandler = (event) => {
         this.setState({
-            lastname : event.target.value,
+            lastName : event.target.value,
             lastnameError : event.target.value.length<5 ? 'Last Name should be 5 characters long.' : ''
         })
     }
@@ -41,7 +41,7 @@ class RegisterPage extends Component {
         let emailRegExp =  RegExp(/^[\w-_\.+]*[\w-_\.]\@([\w]+\.)+[\w]+[\w]$/i);
         this.setState({
             email : event.target.value,
-            emailError : emailRegExp.test(event.target.value) ? 'Email Incorrect Format' : ''
+            emailError : emailRegExp.test(event.target.value) ? '' : 'Email Incorrect Format'
         })
     }
     passwordHandler = (event) => {
@@ -77,8 +77,8 @@ class RegisterPage extends Component {
             axios.post('http://localhost:8080/users',this.state)
             .then(response => {console.log(response)})
             .catch(error => {console.log(error)});
-            console.log(`${this.state.firstname} \n` + 
-            `${this.state.lastname} \n` + 
+            console.log(`${this.state.firstName} \n` + 
+            `${this.state.lastName} \n` + 
             `${this.state.email} \n` + 
             `${this.state.password} \n` + 
             `${this.state.confirmPassword}  `)
@@ -93,9 +93,9 @@ class RegisterPage extends Component {
                 <div className='registerDiv'>
                     <h2>Sign Up</h2>
                     <form onSubmit={this.submitHandler}>
-                        <input type='text' placeholder='First Name' value={this.state.firstname} onChange={this.fNameHandler} required></input>
+                        <input type='text' placeholder='First Name' value={this.state.firstName} onChange={this.fNameHandler} required></input>
                         <br/>
-                        <input type='text' placeholder='Last Name' value={this.state.lastname} onChange={this.lNameHandler} required></input>
+                        <input type='text' placeholder='Last Name' value={this.state.lastName} onChange={this.lNameHandler} required></input>
                         <br/>
                         <input type='email' placeholder='Email' value={this.state.email} onChange={this.emailHandler} required></input>
                         <br/>

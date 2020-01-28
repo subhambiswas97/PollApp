@@ -1,5 +1,6 @@
 package com.pollapp.validator;
 
+import com.pollapp.dto.RegisterDTO;
 import com.pollapp.exception.BadRequestException;
 import com.pollapp.dto.LoginDTO;
 import com.pollapp.entity.User;
@@ -10,18 +11,22 @@ public class UserValidator {
 
     private static final String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
 
+    public static void validateUserToken(String token) throws BadRequestException {
+        if(token.length() != 36)
+            throw new BadRequestException("Invalid Token");
+    }
 
-    public static void validateUser(User user) throws BadRequestException {
-        if(user.getFirstName().length() <2 && user.getFirstName().length() >15)
+    public static void validateUser(RegisterDTO registerDTO) throws BadRequestException {
+        if(registerDTO.getFirstName().length() <2 && registerDTO.getFirstName().length() >15)
             throw new BadRequestException("Invalid Firstname");
-        if(user.getLastName().length() <2 && user.getLastName().length() >15)
+        if(registerDTO.getLastName().length() <2 && registerDTO.getLastName().length() >15)
             throw new BadRequestException("Invalid Lastname");
 
 
-        if(!user.getEmail().matches(regex))
+        if(!registerDTO.getEmail().matches(regex))
             throw new BadRequestException("Invalid Email");
 
-        if(user.getPassword().length() <8 )
+        if(registerDTO.getPassword().length() <8 )
             throw new BadRequestException("Invalid Password");
     }
 

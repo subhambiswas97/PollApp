@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -33,7 +35,13 @@ public class User {
     @JsonIgnoreProperties("user")
     private Token token;
 
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("user")
+    private List<Poll> polls;
+
+
     public User() {
+        polls = new ArrayList<>();
     }
 
     public User(String email, String firstName, String lastName, String password) {
@@ -91,4 +99,13 @@ public class User {
         this.password = password;
     }
 
+    public List<Poll> getPolls() {
+        return polls;
+    }
+
+    public void setPolls(List<Poll> polls) {
+        this.polls = polls;
+    }
+
+    public void addPolls(Poll poll) { this.polls.add(poll); }
 }

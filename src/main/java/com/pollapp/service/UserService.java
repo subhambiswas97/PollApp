@@ -82,13 +82,15 @@ public class UserService {
          return token.getToken();
     }
 
-    public ResponseEntity<User> getUserByToken(String token) {
+    public User getUserByToken(String token) {
         User user = userRepository.findByTokenToken(token);
         //System.out.println(user);
         if(user == null)
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            return null;
+            //return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         //System.out.println("******"+user.getFirstname()+"***********");
-        return new ResponseEntity<>(user,HttpStatus.OK);
+        //return new ResponseEntity<>(user,HttpStatus.OK);
+        return user;
     }
 
     public void invalidateToken(String token) {
