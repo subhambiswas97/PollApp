@@ -1,6 +1,7 @@
 package com.pollapp.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sun.jdi.PrimitiveValue;
 
 import javax.persistence.*;
 import java.util.List;
@@ -14,6 +15,9 @@ public class Poll {
     //@GeneratedValue(strategy = GenerationType.AUTO)
     private String pollId;
 
+    @Column(name = "is_private")
+    private boolean isPrivate = false;
+
     @OneToMany(mappedBy = "poll",cascade = CascadeType.ALL)
     @JsonIgnoreProperties("poll")
     private List<Question> questions;
@@ -22,6 +26,7 @@ public class Poll {
     @JoinColumn(name = "id")
     @JsonIgnoreProperties("polls")
     private User user;
+
 
     public Poll() {
     }
@@ -48,5 +53,13 @@ public class Poll {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(boolean aPrivate) {
+        isPrivate = aPrivate;
     }
 }

@@ -1,18 +1,16 @@
 package com.pollapp.controller;
 
-import com.pollapp.dto.LoginDTO;
-import com.pollapp.dto.RegisterDTO;
-import com.pollapp.dto.TokenDTO;
+import com.pollapp.dto.requestdto.LoginDTO;
+import com.pollapp.dto.requestdto.RegisterDTO;
+import com.pollapp.dto.requestdto.TokenDTO;
 import com.pollapp.entity.User;
 import com.pollapp.service.UserService;
 import com.pollapp.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -56,7 +54,7 @@ public class UserController {
     }
 
     @CrossOrigin
-    @RequestMapping(method = RequestMethod.POST, value = "/users")
+    @RequestMapping(method = RequestMethod.POST, value = "/signup")
     public ResponseEntity<Object> addUser(@RequestBody RegisterDTO registerDTO) {
         log.info("Post hitted");
         System.out.println(registerDTO.getEmail());
@@ -93,7 +91,7 @@ public class UserController {
     }
 
 
-    @PostMapping(value = "/gettoken")
+    @PostMapping(value = "/login")
     @CrossOrigin
     public ResponseEntity<Object> getToken(@RequestBody LoginDTO loginDTO) {
         System.out.println(loginDTO.getEmail());

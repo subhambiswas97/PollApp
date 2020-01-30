@@ -1,11 +1,16 @@
 package com.pollapp.controller;
 
-import com.pollapp.dto.*;
+import com.pollapp.dto.requestdto.MultiVoteDetailDTO;
+import com.pollapp.dto.requestdto.PollDetailDTO;
+import com.pollapp.dto.requestdto.SingleQuesPollDTO;
+import com.pollapp.dto.responsedto.PollResponseDTO;
 import com.pollapp.entity.Poll;
 import com.pollapp.entity.User;
+import com.pollapp.exception.BadRequestException;
 import com.pollapp.service.PollService;
 import com.pollapp.service.UserService;
 import com.pollapp.validator.PollValidator;
+import com.pollapp.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +57,7 @@ public class PollController {
             if(poll == null)
                 return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
 
+            PollValidator.checkIfSingleQuestion(poll);
             PollResponseDTO pollResponseDTO = new PollResponseDTO(poll);
             return new ResponseEntity<>(pollResponseDTO,HttpStatus.OK);
         } catch (Exception e) {
@@ -64,7 +70,9 @@ public class PollController {
 
     @PutMapping(value = "/poll/{pollId}/{questionId}/{optionId}")
     @CrossOrigin
-    public ResponseEntity<Object> giveVote(@PathVariable("pollId") String pollId, @PathVariable("questionId") Long questionId, @PathVariable("optionId") Long optionId) {
+    public ResponseEntity<Object> giveVote(@PathVariable("pollId") String pollId,
+                                           @PathVariable("questionId") Long questionId,
+                                           @PathVariable("optionId") Long optionId) {
 
         try {
             //PollValidator.validateVote(voteDetailDTO);
@@ -100,6 +108,10 @@ public class PollController {
     @CrossOrigin
     public ResponseEntity<Object> createSinglePoll(@RequestBody SingleQuesPollDTO singleQuesPollDTO) {
         try {
+            if (singleQuesPollDTO.isPrivate())
+                log.info("true");
+            else
+                log.info("false");
             User user = userService.getUserByToken(singleQuesPollDTO.getToken());
             if (user==null)
                 return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
@@ -112,6 +124,86 @@ public class PollController {
             log.info(e.toString());
             return new ResponseEntity<>(e.toString(),HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping(value = "/validatedpoll/{pollId}")
+    @CrossOrigin
+    public ResponseEntity<Object> getValidatedPoll(@RequestParam(name = "token",required = false) String userToken,@PathVariable("pollId") String pollId) {
+        try {
+            PollValidator.validatePollToken(pollId);
+            Poll poll = pollService.getPoll(pollId);
+            ResponseEntity responseEntity;
+            if(poll==null)
+                return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+
+            boolean isPrivate = poll.isPrivate();
+            if(isPrivate) {
+                if(userToken==null)
+                    return new ResponseEntity<>("No userToken Provided for private poll",HttpStatus.UNAUTHORIZED);
+                UserValidator.validateUserToken(userToken);
+                User user = userService.getUserByToken(userToken);
+                if(user==null)
+                    return new ResponseEntity<>("Invalid User Token",HttpStatus.UNAUTHORIZED);
+
+            }
+
+            PollResponseDTO pollResponseDTO = new PollResponseDTO(poll);
+            responseEntity = new ResponseEntity(pollResponseDTO,HttpStatus.OK);
+
+            return  responseEntity;
+        } catch(Exception e) {
+            log.info(e.toString());
+            return new ResponseEntity<>(e.toString(),HttpStatus.valueOf(403));
+        }
+    }
+
+    @PutMapping(value = "/validatedpoll/{pollId}/{questionId}/{optionId}")
+    @CrossOrigin
+    public ResponseEntity<Object> giveValidatedVote(@RequestParam(name = "token",required = false) String userToken,
+                                                    @PathVariable("pollId") String pollId,
+                                                    @PathVariable("questionId") Long questionId,
+                                                    @PathVariable("optionId") Long optionId) {
+
+        try {
+            //PollValidator.validateVote(voteDetailDTO);
+            PollValidator.validatePollToken(pollId);
+            PollValidator.validateQuestionId(questionId);
+            PollValidator.validateOptionId(optionId);
+
+            PollResponseDTO pollResponseDTO;
+            boolean updated;
+            Poll poll = pollService.getPoll(pollId);
+            if(poll == null)
+                return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
+
+            boolean isPrivate = poll.isPrivate();
+
+            if(isPrivate) {
+                if(userToken==null)
+                    return new ResponseEntity<>("No userToken Provided for private poll",HttpStatus.UNAUTHORIZED);
+                UserValidator.validateUserToken(userToken);
+                User user = userService.getUserByToken(userToken);
+                if(user==null)
+                    return new ResponseEntity<>("Invalid User Token",HttpStatus.UNAUTHORIZED);
+
+                updated = pollService.updateValidatedVote(user,questionId,optionId);
+
+            } else {
+                updated = pollService.updateVote(questionId,optionId);
+
+            }
+
+            poll = pollService.getPoll(pollId);
+            if(poll == null)
+                return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
+            pollResponseDTO = new PollResponseDTO(poll);
+            return new ResponseEntity<>(pollResponseDTO,HttpStatus.OK);
+
+        } catch(Exception e) {
+            log.info(e.toString());
+            return new ResponseEntity<>(e.toString(),HttpStatus.BAD_REQUEST);
+        }
+
     }
 
 }

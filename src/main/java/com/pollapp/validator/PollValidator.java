@@ -1,9 +1,13 @@
 package com.pollapp.validator;
 
 import com.pollapp.dto.*;
+import com.pollapp.dto.requestdto.OptionDTO;
+import com.pollapp.dto.requestdto.PollDetailDTO;
+import com.pollapp.dto.requestdto.QuestionDTO;
+import com.pollapp.dto.requestdto.SingleQuesPollDTO;
+import com.pollapp.entity.Poll;
 import com.pollapp.exception.BadRequestException;
 
-import javax.management.relation.InvalidRelationTypeException;
 import java.util.Iterator;
 
 public class PollValidator {
@@ -47,6 +51,7 @@ public class PollValidator {
     public static void validateQuestionId(Long questionId) throws BadRequestException {
         if(questionId<=0)
             throw new BadRequestException("Invalid QuestionId");
+
     }
 
     public static void validateOptionId(Long optionId) throws BadRequestException {
@@ -67,6 +72,11 @@ public class PollValidator {
                 throw new BadRequestException("Option should be string");
         }
 
+    }
+
+    public static void checkIfSingleQuestion(Poll poll) throws BadRequestException {
+        if(poll.getQuestions().size()!=1)
+            throw new BadRequestException("Not a single Question Poll");
     }
 
 

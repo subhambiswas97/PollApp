@@ -1,10 +1,10 @@
 package com.pollapp.service;
 
 import com.pollapp.controller.UserController;
-import com.pollapp.dto.OptionDTO;
-import com.pollapp.dto.PollDetailDTO;
-import com.pollapp.dto.QuestionDTO;
-import com.pollapp.dto.SingleQuesPollDTO;
+import com.pollapp.dto.requestdto.OptionDTO;
+import com.pollapp.dto.requestdto.PollDetailDTO;
+import com.pollapp.dto.requestdto.QuestionDTO;
+import com.pollapp.dto.requestdto.SingleQuesPollDTO;
 import com.pollapp.entity.Option;
 import com.pollapp.entity.Poll;
 import com.pollapp.entity.Question;
@@ -12,6 +12,7 @@ import com.pollapp.entity.User;
 import com.pollapp.exception.BadRequestException;
 import com.pollapp.repository.OptionRepository;
 import com.pollapp.repository.PollRepository;
+import com.pollapp.repository.QuestionRepository;
 import com.pollapp.validator.PollValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,11 @@ public class PollService {
     private PollRepository pollRepository;
 
     @Autowired
+    private QuestionRepository questionRepository;
+
+    @Autowired
     private OptionRepository optionRepository;
+
 
     public String createPoll(User user, PollDetailDTO pollDetailDTO) throws BadRequestException {
         Poll poll = new Poll();
@@ -84,7 +89,7 @@ public class PollService {
     }
 
     public boolean updateVote(Long questionId, Long optionId) {
-        boolean result = false;
+        //boolean result = false;
         try {
             //optionRepository.updateVoteByQuestionIdAndOptionId(questionId,optionId);
             Optional<Option> optionalOption = optionRepository.findById(optionId);
@@ -96,9 +101,9 @@ public class PollService {
             return true;
         } catch (Exception e) {
             log.info(e.toString());
-            result = false;
+            return false;
         }
-        return result;
+        //return result;
     }
 
     public String createSinglePoll(User user, SingleQuesPollDTO singleQuesPollDTO) throws BadRequestException {
@@ -106,6 +111,7 @@ public class PollService {
         PollValidator.singleQuesPollValidator(singleQuesPollDTO);
 
         Poll poll = new Poll();
+        poll.setPrivate(singleQuesPollDTO.isPrivate());
         List<Question> questions = new ArrayList<>();
         Question question = new Question();
         question.setQuestion(singleQuesPollDTO.getQuestion());
@@ -133,4 +139,38 @@ public class PollService {
         pollRepository.save(poll);
         return pollID;
     }
+
+
+    public Question getQuestion(Long questionId) throws BadRequestException {
+        log.info("Checkpoint 10 " );
+        PollValidator.validateQuestionId(questionId);
+        log.info("Checkpoint 11 " );
+        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
+        log.info("Checkpoint 12 " );
+        if(optionalQuestion.isEmpty())
+            return null;
+        log.info("Checkpoint 13 " );
+        Question question = optionalQuestion.get();
+        log.info("Checkpoint 14 " );
+        return question;
+    }
+
+    public boolean updateValidatedVote(User user, Long questionId, Long optionId) {
+        //boolean result = false;
+        try {
+            //optionRepository.updateVoteByQuestionIdAndOptionId(questionId,optionId);
+            Optional<Option> optionalOption = optionRepository.findById(optionId);
+            if (optionalOption.isEmpty())
+                return false;
+            Option option = optionalOption.get();
+            option.setVotes(option.getVotes()+1);
+            optionRepository.save(option);
+            return true;
+        } catch (Exception e) {
+            log.info(e.toString());
+            return false;
+        }
+        //return result;
+    }
+
 }

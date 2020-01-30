@@ -15,6 +15,7 @@ public class Token {
     private Long id;
 
     @NotNull
+    @Column(unique = true)
     //@UniqueConstraint()
     private String token;
 

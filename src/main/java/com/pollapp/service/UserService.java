@@ -1,14 +1,12 @@
 package com.pollapp.service;
 
 import com.pollapp.controller.UserController;
-import com.pollapp.dto.LoginDTO;
+import com.pollapp.dto.requestdto.LoginDTO;
 import com.pollapp.entity.Token;
 import com.pollapp.entity.User;
 import com.pollapp.repository.TokenRepository;
 import com.pollapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;

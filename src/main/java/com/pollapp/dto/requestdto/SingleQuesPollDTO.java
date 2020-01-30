@@ -1,5 +1,6 @@
-package com.pollapp.dto;
+package com.pollapp.dto.requestdto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pollapp.entity.Question;
 
 import java.util.List;
@@ -7,6 +8,9 @@ import java.util.List;
 public class SingleQuesPollDTO {
 
     private String token;
+
+    @JsonProperty
+    private boolean isPrivate;
 
     private String question;
 
@@ -21,6 +25,14 @@ public class SingleQuesPollDTO {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(boolean aPrivate) {
+        isPrivate = aPrivate;
     }
 
     public String getQuestion() {

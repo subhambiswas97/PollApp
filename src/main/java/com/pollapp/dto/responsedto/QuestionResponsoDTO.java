@@ -1,4 +1,4 @@
-package com.pollapp.dto;
+package com.pollapp.dto.responsedto;
 
 import com.pollapp.entity.Option;
 import com.pollapp.entity.Question;

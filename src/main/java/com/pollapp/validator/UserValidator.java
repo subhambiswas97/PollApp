@@ -1,9 +1,8 @@
 package com.pollapp.validator;
 
-import com.pollapp.dto.RegisterDTO;
+import com.pollapp.dto.requestdto.RegisterDTO;
 import com.pollapp.exception.BadRequestException;
-import com.pollapp.dto.LoginDTO;
-import com.pollapp.entity.User;
+import com.pollapp.dto.requestdto.LoginDTO;
 import org.springframework.stereotype.Service;
 
 @Service

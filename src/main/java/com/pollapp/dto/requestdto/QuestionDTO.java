@@ -1,4 +1,4 @@
-package com.pollapp.dto;
+package com.pollapp.dto.requestdto;
 
 import java.util.List;
 

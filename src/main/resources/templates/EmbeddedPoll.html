@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Average Marks</title>
+</head>
+<body>
+<!--
+<form  method="post">
+    Question : <p th:text="${question}"></p>
+    <span th:each="option : ${options}">
+    <li> <input type="radio" name="choice" th:field="*{answerId}" th:value="${option.optionId}">
+        <span th:text = "${option.option}"></span><br>
+        <span th:text = "${option.votes}"></span>
+    </li>
+    </span>
+    <button type="submit">Submit</button>
+</form>
+-->
+
+<form  method="POST" th:object="${embedDTO}">
+    Question : <span th:text="${question}"></span> <br/>
+    <ul th:each="option: ${options}">
+        <li>
+            <button th:name="answerId" th:value="${option.optionId}">+1</button>
+            <span th:text="${option.votes}"></span>
+            <span th:text="${option.option}"></span>
+        </li>
+    </ul>
+
+    <!--<button name="userAction" value="approve" >Approve</button>
+    <button name="userAction" value="reject" >Reject</button>
+    -->
+
+</form>
+<!--
+<form th:object="${embedDTO}" method="post">
+    <fieldset>
+        <legend th:text="${question}"></legend>
+        <ul>
+            <li th:each="option : ${options}">
+                <input type="radio" th:field="*{embedDTO.userAction}" th:value="${option.optionId}" />
+                <label th:for="${option.optionId}" th:text="${option}"></label>
+            </li>
+        </ul>
+    </fieldset>
+    <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+</form>
+-->
+<!--
+<table>
+    <tr>
+        <td>ID</td>
+        <td>First Name</td>
+        <td>Last Name</td>
+        <td>Average Marks</td>
+    </tr>
+    <tr th:each="mList : ${marksList}">
+        <td th:text = "${mList._id}">ID</td>
+        <td th:text = "${mList.fName}">First Name</td>
+        <td th:text = "${mList.lName}">Last Name</td>
+        <td th:text = "${mList.avg_marks}">Average Marks</td>
+    </tr>
+</table>
+-->
+</body>
+</html>
