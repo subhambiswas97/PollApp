@@ -16,7 +16,6 @@ public class Token {
 
     @NotNull
     @Column(unique = true)
-    //@UniqueConstraint()
     private String token;
 
     @OneToOne

@@ -1,7 +1,8 @@
 package com.pollapp.service;
 
 import com.pollapp.controller.UserController;
-import com.pollapp.dto.requestdto.LoginDTO;
+import com.pollapp.dto.request.LoginDTO;
+import com.pollapp.entity.Option;
 import com.pollapp.entity.Token;
 import com.pollapp.entity.User;
 import com.pollapp.repository.TokenRepository;
@@ -51,48 +52,50 @@ public class UserService {
     }
 
     public String getToken(LoginDTO loginDTO) {
-        //log.info("***gettoken 01***");
+
         User user = userRepository.findByEmailAndPassword(loginDTO.getEmail(), loginDTO.getPassword());
-        //log.info("***gettoken 02***");
         if(user == null)
             return null;
-        //log.info("***gettoken 03***");
+
         Optional<Token> optionalToken = tokenRepository.findById(user.getId());
         Token token;
         if(optionalToken.isEmpty()) {
-            //log.info("***token=null 01***");
+
             token = new Token();
             token.setToken(UUID.randomUUID().toString());
             user.setToken(token);
-            //log.info("***token=null 02***");
             token.setUser(user);
             userRepository.save(user);
-            //log.info("***token=null 03***");
         }
         else {
             token = optionalToken.get();
-            //log.info("***token!=null 01***");
             token.setToken(UUID.randomUUID().toString());
             tokenRepository.save(token);
-            //log.info("***token!=null 02***");
         }
-        //log.info("***return token 01***");
+
          return token.getToken();
     }
 
     public User getUserByToken(String token) {
         User user = userRepository.findByTokenToken(token);
-        //System.out.println(user);
+
         if(user == null)
             return null;
-            //return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-        //System.out.println("******"+user.getFirstname()+"***********");
-        //return new ResponseEntity<>(user,HttpStatus.OK);
+
         return user;
     }
 
     public void invalidateToken(String token) {
         tokenRepository.deleteByToken(token);
+    }
+
+    public User getUserById(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if(optionalUser.isEmpty())
+            return null;
+
+        User user = optionalUser.get();
+        return user;
     }
 
 

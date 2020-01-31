@@ -1,8 +1,8 @@
 package com.pollapp.controller;
 
-import com.pollapp.dto.requestdto.LoginDTO;
-import com.pollapp.dto.requestdto.RegisterDTO;
-import com.pollapp.dto.requestdto.TokenDTO;
+import com.pollapp.dto.request.LoginDTO;
+import com.pollapp.dto.request.RegisterDTO;
+import com.pollapp.dto.request.TokenDTO;
 import com.pollapp.entity.User;
 import com.pollapp.service.UserService;
 import com.pollapp.validator.UserValidator;
@@ -23,28 +23,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
-    /*@RequestMapping(value= "/**", method=RequestMethod.OPTIONS)
-    public void corsHeaders(HttpServletResponse response) {
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, x-requested-with");
-        response.addHeader("Access-Control-Max-Age", "3600");
-    }
-
-     */
-
-//    @RequestMapping(value= "/gettoken")
-//    public ResponseEntity corsHeaders() {
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.add("Access-Control-Allow-Origin", "*");
-//        httpHeaders.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-//        httpHeaders.add("Access-Control-Allow-Headers", "origin, content-type, accept, x-requested-with");
-//        httpHeaders.add("Access-Control-Max-Age", "3600");
-//        return new ResponseEntity(null,httpHeaders,HttpStatus.OK);
-//    }
-
-
 
     @GetMapping(value = "/user")
     @CrossOrigin
@@ -97,10 +75,7 @@ public class UserController {
         System.out.println(loginDTO.getEmail());
         System.out.println(loginDTO.getPassword());
 
-        //Response response = new Response();
         ResponseEntity<Object> responseEntity;
-        //HttpHeaders httpHeaders = new HttpHeaders();
-        //httpHeaders.add("Access-Control-Allow-Origin","http://localhost:3000/**");
 
         try {
             UserValidator.validateLogin(loginDTO);
@@ -121,22 +96,14 @@ public class UserController {
             responseEntity = new ResponseEntity<>(e.toString(),HttpStatus.valueOf(401));
         }
 
-
-        /*else {
-            response.setStatus(200);
-            response.setToke
-        }
-        return response;
-         */
-
         return responseEntity;
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/getuser")
     public ResponseEntity<Object> getUser(@RequestBody TokenDTO tokenDTO) {
         try {
-            System.out.println(tokenDTO.getToken());
-            User user = userService.getUserByToken(tokenDTO.getToken());
+            System.out.println(tokenDTO.getUserToken());
+            User user = userService.getUserByToken(tokenDTO.getUserToken());
             if(user == null)
                 return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
             return new ResponseEntity<>(user,HttpStatus.OK);
@@ -148,11 +115,12 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/logout")
+    @CrossOrigin
     public ResponseEntity<Object> logout(@RequestBody TokenDTO tokenDTO) {
         try {
-            UserValidator.validateUserToken(tokenDTO.getToken());
-            userService.invalidateToken(tokenDTO.getToken());
-            return new ResponseEntity<>(tokenDTO.getToken(),HttpStatus.OK);
+            UserValidator.validateUserToken(tokenDTO.getUserToken());
+            userService.invalidateToken(tokenDTO.getUserToken());
+            return new ResponseEntity<>(tokenDTO.getUserToken(),HttpStatus.OK);
         } catch (Exception e) {
             log.info(e.toString());
             return new ResponseEntity<>(e.toString(),HttpStatus.BAD_REQUEST);

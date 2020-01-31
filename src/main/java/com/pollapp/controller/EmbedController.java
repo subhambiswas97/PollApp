@@ -1,7 +1,7 @@
 package com.pollapp.controller;
 
-import com.pollapp.dto.embeddto.EmbedDTO;
-import com.pollapp.dto.responsedto.OptionResponseDTO;
+import com.pollapp.dto.embed.EmbedDTO;
+import com.pollapp.dto.response.OptionResponseDTO;
 import com.pollapp.entity.Option;
 import com.pollapp.entity.Question;
 import com.pollapp.exception.BadRequestException;

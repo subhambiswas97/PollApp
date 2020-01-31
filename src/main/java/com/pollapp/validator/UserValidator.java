@@ -1,9 +1,11 @@
 package com.pollapp.validator;
 
-import com.pollapp.dto.requestdto.RegisterDTO;
+import com.pollapp.dto.request.RegisterDTO;
 import com.pollapp.exception.BadRequestException;
-import com.pollapp.dto.requestdto.LoginDTO;
+import com.pollapp.dto.request.LoginDTO;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class UserValidator {
@@ -11,8 +13,13 @@ public class UserValidator {
     private static final String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
 
     public static void validateUserToken(String token) throws BadRequestException {
-        if(token.length() != 36)
+        try {
+            UUID uuid = UUID.fromString(token);
+            if(!(uuid.toString().equals(token)))
+                throw new BadRequestException("Invalid Token");
+        } catch (Exception e) {
             throw new BadRequestException("Invalid Token");
+        }
     }
 
     public static void validateUser(RegisterDTO registerDTO) throws BadRequestException {
@@ -30,7 +37,7 @@ public class UserValidator {
     }
 
     public static void validateLogin(LoginDTO loginDTO) throws BadRequestException  {
-        //String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+
         if(!loginDTO.getEmail().matches(regex))
             throw new BadRequestException("Invalid Email");
 

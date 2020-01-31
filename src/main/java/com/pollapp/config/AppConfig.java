@@ -12,6 +12,5 @@ public class AppConfig implements WebMvcConfigurer {
         corsRegistry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000").allowedMethods("GET","POST");
     }
-
      */
 }

@@ -1,20 +1,28 @@
 package com.pollapp.validator;
 
 import com.pollapp.dto.*;
-import com.pollapp.dto.requestdto.OptionDTO;
-import com.pollapp.dto.requestdto.PollDetailDTO;
-import com.pollapp.dto.requestdto.QuestionDTO;
-import com.pollapp.dto.requestdto.SingleQuesPollDTO;
+import com.pollapp.dto.request.OptionDTO;
+import com.pollapp.dto.request.PollDetailDTO;
+import com.pollapp.dto.request.QuestionDTO;
+import com.pollapp.dto.request.SingleQuesPollDTO;
+import com.pollapp.entity.Option;
 import com.pollapp.entity.Poll;
 import com.pollapp.exception.BadRequestException;
 
 import java.util.Iterator;
+import java.util.UUID;
 
 public class PollValidator {
 
     public static void validatePollToken(String token) throws BadRequestException {
-        if(token.length() != 36)
+        try {
+            UUID uuid = UUID.fromString(token);
+            if(!(uuid.toString().equals(token)))
+                throw new BadRequestException("Invalid Token");
+        } catch (Exception e) {
             throw new BadRequestException("Invalid Token");
+        }
+
     }
 
     public static void validatePoll(PollDetailDTO pollDetailDTO) throws  BadRequestException {
@@ -61,7 +69,7 @@ public class PollValidator {
 
     public  static void  singleQuesPollValidator(SingleQuesPollDTO singleQuesPollDTO) throws BadRequestException {
 
-        PollValidator.validatePollToken(singleQuesPollDTO.getToken());
+        //UserValidator.validateUserToken(singleQuesPollDTO.getToken());
         if (singleQuesPollDTO.getQuestion().length()==0)
             throw new BadRequestException("Question is Blank");
         if(singleQuesPollDTO.getOptions().size()<2)
@@ -77,6 +85,14 @@ public class PollValidator {
     public static void checkIfSingleQuestion(Poll poll) throws BadRequestException {
         if(poll.getQuestions().size()!=1)
             throw new BadRequestException("Not a single Question Poll");
+    }
+
+    public static  void checkOptionQuestionPollSame(String pollId, Long questionId, Option option) throws BadRequestException {
+        if (option.getQuestion().getQuestionId()!=questionId)
+            throw new BadRequestException("Option doesnot belong to questionId");
+        if(!(option.getQuestion().getPoll().getPollId().equals(pollId)))
+            throw new BadRequestException("Option doesnot belong to Poll");
+
     }
 
 

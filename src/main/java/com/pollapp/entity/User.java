@@ -39,9 +39,19 @@ public class User {
     @JsonIgnoreProperties("user")
     private List<Poll> polls;
 
+    @ManyToMany(mappedBy = "votedBy")
+    @JsonIgnoreProperties("votedBy")
+    private List<Option> votedOptions;
+
+    @OneToOne
+    @JoinColumn(name = "embedded_poll")
+    @JsonIgnoreProperties("user")
+    private Poll embeddedPoll;
 
     public User() {
+
         polls = new ArrayList<>();
+        this.votedOptions = new ArrayList<>();
     }
 
     public User(String email, String firstName, String lastName, String password) {
@@ -108,4 +118,24 @@ public class User {
     }
 
     public void addPolls(Poll poll) { this.polls.add(poll); }
+
+    public List<Option> getVotedOptions() {
+        return votedOptions;
+    }
+
+    public void setVotedOptions(List<Option> votedOptions) {
+        this.votedOptions = votedOptions;
+    }
+
+    public void addVotedOptions(Option option) {
+        this.votedOptions.add(option);
+    }
+
+    public Poll getEmbeddedPoll() {
+        return embeddedPoll;
+    }
+
+    public void setEmbeddedPoll(Poll embeddedPoll) {
+        this.embeddedPoll = embeddedPoll;
+    }
 }

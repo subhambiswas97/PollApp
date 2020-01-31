@@ -1,7 +1,6 @@
-package com.pollapp.dto.requestdto;
+package com.pollapp.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.pollapp.entity.Question;
 
 import java.util.List;
 

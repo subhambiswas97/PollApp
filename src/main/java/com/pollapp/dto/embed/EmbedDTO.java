@@ -1,4 +1,4 @@
-package com.pollapp.dto.embeddto;
+package com.pollapp.dto.embed;
 
 public class EmbedDTO {
 

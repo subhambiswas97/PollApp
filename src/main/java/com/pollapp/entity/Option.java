@@ -5,6 +5,8 @@ import net.bytebuddy.implementation.bind.annotation.Default;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "options")
@@ -20,16 +22,23 @@ public class Option {
     @Column(name = "_option")
     private String option;
 
-    @Column(name = "votes")
-    private int votes = 0;
-
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "question_id")
     @JsonIgnoreProperties("options")
     private Question question;
 
+    @Column(name = "votes")
+    private int votes = 0;
+
+    @ManyToMany
+    @JoinTable(name = "vote_user",
+    joinColumns = @JoinColumn(name = "option_id"),
+    inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @JsonIgnoreProperties("votedOptions")
+    private List<User> votedBy;
 
     public Option() {
+        this.votedBy = new ArrayList<>();
     }
 
     public Long getOptionId() {
@@ -62,5 +71,17 @@ public class Option {
 
     public void setVotes(int votes) {
         this.votes = votes;
+    }
+
+    public List<User> getVotedBy() {
+        return votedBy;
+    }
+
+    public void setVotedBy(List<User> votedBy) {
+        this.votedBy = votedBy;
+    }
+
+    public void addVotedBy(User user) {
+        this.votedBy.add(user);
     }
 }

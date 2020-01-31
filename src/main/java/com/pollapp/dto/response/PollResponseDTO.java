@@ -1,4 +1,4 @@
-package com.pollapp.dto.responsedto;
+package com.pollapp.dto.response;
 
 import com.pollapp.entity.Poll;
 import com.pollapp.entity.Question;
@@ -15,13 +15,13 @@ public class PollResponseDTO {
     public PollResponseDTO() {
     }
 
-    public PollResponseDTO(final Poll poll) {
+    public PollResponseDTO(final Poll poll,boolean isPrivate) {
         this.pollId = poll.getPollId();
 
         this.questions = new ArrayList<>();
         Iterator it = poll.getQuestions().iterator();
         while (it.hasNext()) {
-            questions.add(new QuestionResponsoDTO((Question) it.next()));
+            questions.add(new QuestionResponsoDTO((Question) it.next() , isPrivate));
         }
 
     }
