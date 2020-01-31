@@ -29,6 +29,7 @@ public class PollController {
     @Autowired
     private UserService userService;
 
+    //CREATE POLL WITH MULTIPLE QUESTIONS
     @PostMapping(value = "/poll")
     @CrossOrigin
     public ResponseEntity<Object> createPoll(@RequestBody PollDetailDTO pollDetailDTO) {
@@ -48,6 +49,7 @@ public class PollController {
 
     }
 
+    //INITIAL METHOD FOR FETCHING POLL DETAILS
     @GetMapping(value = "/poll/{id}")
     @CrossOrigin
     public ResponseEntity<Object> getPoll(@PathVariable("id") String pollId) {
@@ -67,7 +69,7 @@ public class PollController {
 
     }
 
-
+    //INITIAL METHOD FOR VOTING
     @PutMapping(value = "/poll/{pollId}/{questionId}/{optionId}")
     @CrossOrigin
     public ResponseEntity<Object> giveVote(@PathVariable("pollId") String pollId,
@@ -98,6 +100,10 @@ public class PollController {
 
     }
 
+    //******************************************************************************************************************
+    //************************************ MULTI QUESTION POLL VOTING **************************************************
+
+    //VOTING FOR POLL WITH MULTIPLE QUESTIONS
     @PutMapping(value = "/poll2/{pollId}")
     @CrossOrigin
     public ResponseEntity<Object> giveMultiVote(@PathVariable("pollId") String pollId,
@@ -105,6 +111,10 @@ public class PollController {
         return new ResponseEntity<>(multiVoteDetailDTO,HttpStatus.OK);
     }
 
+    //******************************************************************************************************************
+    //******************************* SINGLE QUESTION POLL CREATION ****************************************************
+
+    //MAKE POLL WITH SINGLE QUESTION
     @PostMapping(value = "/poll/singleques")
     @CrossOrigin
     public ResponseEntity<Object> createSinglePoll(@RequestBody SingleQuesPollDTO singleQuesPollDTO) {
@@ -133,8 +143,9 @@ public class PollController {
     }
 
     //******************************************************************************************************************
-    //************************************ STORE PRIVATE RESPONSES ****************************************************
+    //************************************ STORE PRIVATE RESPONSES *****************************************************
 
+    //GET POLL DETAILS
     @GetMapping(value = "/validatedpoll/{pollId}")
     @CrossOrigin
     public ResponseEntity<Object> getValidatedPoll(@RequestParam(name = "token",required = false) String userToken,
@@ -167,6 +178,7 @@ public class PollController {
         }
     }
 
+    //VOTE
     @PutMapping(value = "/validatedpoll/{pollId}/{questionId}/{optionId}")
     @CrossOrigin
     public ResponseEntity<Object> giveValidatedVote(@RequestParam(name = "token",required = false) String userToken,
@@ -222,6 +234,7 @@ public class PollController {
     //******************************************************************************************************************
     //********************************* PUBLIC AND PRIVATE TOKENS ******************************************************
 
+    //GET POLL DETAILS
     @GetMapping(value = "/validatedbothpoll/{pollId}")
     @CrossOrigin
     public ResponseEntity<Object> getValidatedBothPoll(@RequestParam(name = "token",required = true) String userToken,
@@ -267,6 +280,7 @@ public class PollController {
         }
     }
 
+    //VOTE
     @PutMapping(value = "/validatedbothpoll/{pollId}/{questionId}/{optionId}")
     @CrossOrigin
     public ResponseEntity<Object> giveValidatedBothVote(@RequestParam(name = "token",required = true) String userToken,
@@ -329,6 +343,7 @@ public class PollController {
     //****************************************  GET   STATUS  **********************************************************
 
 
+    //GET STATUS OF POLL
     @GetMapping(value = "/poll/{pollId}/status")
     @CrossOrigin
     public ResponseEntity<Object>  getStatus(@PathVariable("pollId") String pollId,
@@ -364,6 +379,7 @@ public class PollController {
     //******************************************************************************************************************
     //************************************** EMBEDDED PART *************************************************************
 
+    //SETTING EMBEDDED POLL
     @PutMapping(value = "embed/poll/{pollId}")
     @CrossOrigin
     public ResponseEntity<Object> setEmbedding(@PathVariable("pollId") String pollId,
@@ -394,6 +410,7 @@ public class PollController {
         }
     }
 
+    //GETTING EMBEDDED POLL DETAILS
     @GetMapping(value = "/embed/{userId}/poll")
     @CrossOrigin
     public ResponseEntity<Object> getEmbedding(@PathVariable("userId") Long  userId,
@@ -423,6 +440,7 @@ public class PollController {
         }
     }
 
+    //VOTING
     @PutMapping(value = "/embed/{userId}/poll/{quesId}/{optionId}")
     @CrossOrigin
     public ResponseEntity<Object> voteEmbedding(@PathVariable("userId") Long userId,

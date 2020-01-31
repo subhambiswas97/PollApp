@@ -31,6 +31,8 @@ public class UserController {
         return userService.getUsers();
     }
 
+
+    //USER REGISTRATION
     @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, value = "/signup")
     public ResponseEntity<Object> addUser(@RequestBody RegisterDTO registerDTO) {
@@ -55,20 +57,7 @@ public class UserController {
         return responseEntity;
     }
 
-    @PostMapping(value = "/loginvalidate")
-    public String validateLogin(@RequestBody LoginDTO loginDTO) {
-        System.out.println(loginDTO.getEmail());
-        System.out.println(loginDTO.getPassword());
-        if(userService.validateUser(loginDTO)) {
-            String username = userService.getUsername(loginDTO.getEmail());
-            if(username==null)
-                return "Faliure";
-            return username;
-        }
-        return "Faliure";
-    }
-
-
+    //USER LOGIN
     @PostMapping(value = "/login")
     @CrossOrigin
     public ResponseEntity<Object> getToken(@RequestBody LoginDTO loginDTO) {
@@ -99,6 +88,7 @@ public class UserController {
         return responseEntity;
     }
 
+    //FUNCTION FOR TESTING PURPOSES
     @RequestMapping(method = RequestMethod.POST, value = "/getuser")
     public ResponseEntity<Object> getUser(@RequestBody TokenDTO tokenDTO) {
         try {
@@ -114,6 +104,7 @@ public class UserController {
 
     }
 
+    //USER LOGOUT
     @RequestMapping(method = RequestMethod.POST, value = "/logout")
     @CrossOrigin
     public ResponseEntity<Object> logout(@RequestBody TokenDTO tokenDTO) {

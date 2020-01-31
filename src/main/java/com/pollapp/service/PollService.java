@@ -90,7 +90,7 @@ public class PollService {
     }
 
     public boolean updateVote(Long questionId, Long optionId) {
-        //boolean result = false;
+
         try {
 
             Optional<Option> optionalOption = optionRepository.findById(optionId);
@@ -108,7 +108,6 @@ public class PollService {
     }
 
     public String createSinglePoll(User user, SingleQuesPollDTO singleQuesPollDTO) throws BadRequestException {
-
 
         PollValidator.singleQuesPollValidator(singleQuesPollDTO);
 
@@ -157,9 +156,7 @@ public class PollService {
     }
 
     public boolean updateValidatedVote(User user, String pollId, Long questionId, Long optionId) throws Exception,BadRequestException {
-        //boolean result = false;
 
-            //optionRepository.updateVoteByQuestionIdAndOptionId(questionId,optionId);
             Optional<Option> optionalOption = optionRepository.findById(optionId);
             if (optionalOption.isEmpty())
                 return false;
@@ -183,7 +180,6 @@ public class PollService {
             optionRepository.save(option);
             return true;
 
-        //return result;
     }
 
     public boolean hasPublicTokenVoted(Poll poll, String userToken) {
