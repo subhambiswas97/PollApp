@@ -33,16 +33,16 @@ public class EmbedController {
             //log.info("Checkpoint 1 " );
             Question question = pollService.getQuestion(quesId);
             //log.info("Checkpoint 2 " );
-            if(question==null)
+            if (question == null)
                 throw new BadRequestException("No question");
             //log.info("Checkpoint 3 " );
-            model.addAttribute("question",question.getQuestion());
+            model.addAttribute("question", question.getQuestion());
 
             List<OptionResponseDTO> optionResponseDTOList = new ArrayList<>();
             List<Option> options = question.getOptions();
             //log.info("Checkpoint 4 : Count" + options.size());
             Iterator it = options.iterator();
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 //log.info("Checkpoint 5 " );
                 OptionResponseDTO optionResponseDTO = new OptionResponseDTO();
                 Option option = (Option) it.next();
@@ -53,13 +53,13 @@ public class EmbedController {
                 optionResponseDTOList.add(optionResponseDTO);
                 //log.info("Checkpoint 6 " );
             }
-            model.addAttribute("options",optionResponseDTOList);
-            model.addAttribute("questionId",quesId);
-            Long answerId ;
-            model.addAttribute("embedDTO",new EmbedDTO());
+            model.addAttribute("options", optionResponseDTOList);
+            model.addAttribute("questionId", quesId);
+            Long answerId;
+            model.addAttribute("embedDTO", new EmbedDTO());
             return "EmbeddedPoll.html";
 
-        } catch(Exception e) {
+        } catch (Exception e) {
             log.info(e.toString());
             return "InvalidPoll.html";
         }
@@ -69,21 +69,20 @@ public class EmbedController {
 
     @PostMapping(value = "embed/poll/{pollId}/{quesId}")
     @CrossOrigin
-    public String updateVote(@ModelAttribute("embedDTO") EmbedDTO embedDTO,@PathVariable("pollId") String pollId ,@PathVariable("quesId") Long quesId) {
-        try{
+    public String updateVote(@ModelAttribute("embedDTO") EmbedDTO embedDTO, @PathVariable("pollId") String pollId, @PathVariable("quesId") Long quesId) {
+        try {
             log.info("Answer Id is" + Long.parseLong(embedDTO.getAnswerId()));
             log.info("Question Id is " + quesId);
             PollValidator.validateQuestionId(quesId);
-            pollService.updateVote(quesId,Long.parseLong(embedDTO.getAnswerId()));
+            pollService.updateVote(quesId, Long.parseLong(embedDTO.getAnswerId()));
             return "ThankYou.html";
 
-        } catch(Exception e) {
+        } catch (Exception e) {
             log.info(e.toString());
             return "BackError.html";
         }
 
     }
-
 
 
 }

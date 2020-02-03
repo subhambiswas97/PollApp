@@ -12,6 +12,7 @@ import com.pollapp.repository.PollRepository;
 import com.pollapp.repository.QuestionRepository;
 import com.pollapp.repository.UserRepository;
 import com.pollapp.validator.PollValidator;
+import org.apache.catalina.webresources.JarResourceSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,9 +40,9 @@ public class PollService {
 
 
     public String createPoll(User user, PollDetailDTO pollDetailDTO) throws BadRequestException {
-        Poll poll = new Poll();
-
         PollValidator.validatePoll(pollDetailDTO);
+
+        Poll poll = new Poll();
 
         List<QuestionDTO> questionDTOS = pollDetailDTO.getQuestions();
         Iterator questionDTOIterator = questionDTOS.iterator();
@@ -83,7 +84,7 @@ public class PollService {
 
     public Poll getPoll(String pollId) {
         Optional<Poll> optionalPoll = pollRepository.findById(pollId);
-        if(optionalPoll.isEmpty())
+        if (optionalPoll.isEmpty())
             return null;
         return optionalPoll.get();
 
@@ -97,7 +98,7 @@ public class PollService {
             if (optionalOption.isEmpty())
                 return false;
             Option option = optionalOption.get();
-            option.setVotes(option.getVotes()+1);
+            option.setVotes(option.getVotes() + 1);
             optionRepository.save(option);
             return true;
         } catch (Exception e) {
@@ -148,37 +149,40 @@ public class PollService {
         PollValidator.validateQuestionId(questionId);
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);
 
-        if(optionalQuestion.isEmpty())
+        if (optionalQuestion.isEmpty())
             return null;
 
         Question question = optionalQuestion.get();
         return question;
     }
 
-    public boolean updateValidatedVote(User user, String pollId, Long questionId, Long optionId) throws Exception,BadRequestException {
+    public boolean updateValidatedVote(User user,
+                                       String pollId,
+                                       Long questionId,
+                                       Long optionId) throws Exception, BadRequestException {
 
-            Optional<Option> optionalOption = optionRepository.findById(optionId);
-            if (optionalOption.isEmpty())
-                return false;
-            Option option = optionalOption.get();
+        Optional<Option> optionalOption = optionRepository.findById(optionId);
+        if (optionalOption.isEmpty())
+            return false;
+        Option option = optionalOption.get();
 
-            PollValidator.checkOptionQuestionPollSame(pollId,questionId,option);
+        PollValidator.checkOptionQuestionPollSame(pollId, questionId, option);
 
 
-            if(option.getVotedBy().contains(user))
-                throw new BadRequestException("Cannot vote twice");
+        if (option.getVotedBy().contains(user))
+            throw new BadRequestException("Cannot vote twice");
 
-            Poll poll = option.getQuestion().getPoll();
-            PrivateVote privateVote = new PrivateVote();
-            privateVote.setUserId(user.getId());
-            privateVote.setPoll(poll);
-            poll.addPrivateVotes(privateVote);
+        Poll poll = option.getQuestion().getPoll();
+        PrivateVote privateVote = new PrivateVote();
+        privateVote.setUserId(user.getId());
+        privateVote.setPoll(poll);
+        poll.addPrivateVotes(privateVote);
 
-            option.setVotes(option.getVotes()+1);
-            option.addVotedBy(user);
-            user.addVotedOptions(option);
-            optionRepository.save(option);
-            return true;
+        option.setVotes(option.getVotes() + 1);
+        option.addVotedBy(user);
+        user.addVotedOptions(option);
+        optionRepository.save(option);
+        return true;
 
     }
 
@@ -187,9 +191,9 @@ public class PollService {
         List<PublicToken> votedTokens = poll.getPublicTokens();
         PublicToken publicToken;
         Iterator it = votedTokens.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             publicToken = (PublicToken) it.next();
-            if(publicToken.getToken().equals(userToken))
+            if (publicToken.getToken().equals(userToken))
                 return true;
         }
         return false;
@@ -200,9 +204,9 @@ public class PollService {
         List<PrivateVote> privateVotes = poll.getPrivateVotes();
         PrivateVote privateVote;
         Iterator it = privateVotes.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             privateVote = (PrivateVote) it.next();
-            if(privateVote.getUserId()==userId)
+            if (privateVote.getUserId() == userId)
                 return true;
         }
         return false;
@@ -221,7 +225,7 @@ public class PollService {
         publicToken.setPoll(poll);
         publicToken.setToken(userToken);
         poll.addPublicTokens(publicToken);
-        option.setVotes(option.getVotes()+1);
+        option.setVotes(option.getVotes() + 1);
         optionRepository.save(option);
         return true;
     }
@@ -230,5 +234,90 @@ public class PollService {
 
         user.setEmbeddedPoll(poll);
         userRepository.save(user);
+    }
+
+    public boolean updateMultiVote(boolean isPrivate,
+                                         Object userTokenOrUser,
+                                         Poll poll,
+                                         List<Long> questionIds,
+                                         List<Long> optionIds) throws Exception, BadRequestException {
+        int arrSize = questionIds.size();
+        /*for(int i=0;i<arrSize;i++) {
+            Optional<Option> optionalOption = optionRepository.findById(optionIds.get(i));
+            if(optionalOption.isEmpty())
+                throw new BadRequestException("Option ID doesnot Exist");
+            Option option = optionalOption.get();
+            PollValidator.checkOptionQuestionPollSame(poll.getPollId(),questionIds.get(i),option);
+        }
+        */
+
+        HashMap<Long, Long> questionOptionMap = new HashMap<>();
+        HashMap<Long, Boolean> visitedQuestion = new HashMap<>();
+        HashMap<Long, Boolean> visitedOptions = new HashMap<>();
+        for (int i = 0; i < arrSize; i++) {
+            questionOptionMap.put(questionIds.get(i), optionIds.get(i));
+            visitedQuestion.put(questionIds.get(i), false);
+            visitedOptions.put(optionIds.get(i), false);
+        }
+
+        List<Question> pollQuestions = poll.getQuestions();
+        int questionListSize = pollQuestions.size();
+        for (int i = 0; i < questionListSize; i++) {
+            Question question = pollQuestions.get(i);
+            Long questionId = question.getQuestionId();
+            visitedQuestion.put(questionId, true);
+
+            List<Option> optionList = question.getOptions();
+            int optionListSize = optionList.size();
+            for (int j = 0; j < optionListSize; j++) {
+                Option option = optionList.get(j);
+                Long optionId = option.getOptionId();
+
+                if (questionOptionMap.get(questionId) == optionId) {
+                    visitedOptions.put(optionId, true);
+                    option.setVotes(option.getVotes() + 1);
+
+                    if(isPrivate) {
+                        option.addVotedBy((User) userTokenOrUser);
+                        ((User) userTokenOrUser).addVotedOptions(option);
+                    }
+
+                    //optionList.set(j,option);
+                    break;
+                }
+            }
+            //question.setOptions(optionList);
+
+            //pollQuestions.set(i,question);
+        }
+        //poll.setQuestions(pollQuestions);
+
+        for (int i = 0; i < arrSize; i++) {
+            if (!(visitedQuestion.get(questionIds.get(i)))) {
+                throw new BadRequestException("Question Id : " + questionIds.get(i) + " Not Visited ");
+            }
+        }
+
+        for (int i = 0; i < arrSize; i++) {
+            if (!(visitedOptions.get(optionIds.get(i)))) {
+                throw new BadRequestException("Option Id : " + optionIds.get(i) + " Not Visited ");
+            }
+        }
+        if(isPrivate) {
+            PrivateVote privateVote = new PrivateVote();
+            privateVote.setUserId(((User) userTokenOrUser).getId());
+            privateVote.setPoll(poll);
+            poll.addPrivateVotes(privateVote);
+        }
+        else {
+            PublicToken publicToken = new PublicToken();
+            publicToken.setPoll(poll);
+            publicToken.setToken((String) userTokenOrUser);
+            poll.addPublicTokens(publicToken);
+        }
+
+        pollRepository.save(poll);
+
+        return true;
     }
 }

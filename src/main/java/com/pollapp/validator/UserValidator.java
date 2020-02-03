@@ -15,7 +15,7 @@ public class UserValidator {
     public static void validateUserToken(String token) throws BadRequestException {
         try {
             UUID uuid = UUID.fromString(token);
-            if(!(uuid.toString().equals(token)))
+            if (!(uuid.toString().equals(token)))
                 throw new BadRequestException("Invalid Token");
         } catch (Exception e) {
             throw new BadRequestException("Invalid Token");
@@ -23,25 +23,25 @@ public class UserValidator {
     }
 
     public static void validateUser(RegisterDTO registerDTO) throws BadRequestException {
-        if(registerDTO.getFirstName().length() <2 && registerDTO.getFirstName().length() >15)
+        if (registerDTO.getFirstName().length() < 2 && registerDTO.getFirstName().length() > 15)
             throw new BadRequestException("Invalid Firstname");
-        if(registerDTO.getLastName().length() <2 && registerDTO.getLastName().length() >15)
+        if (registerDTO.getLastName().length() < 2 && registerDTO.getLastName().length() > 15)
             throw new BadRequestException("Invalid Lastname");
 
 
-        if(!registerDTO.getEmail().matches(regex))
+        if (!registerDTO.getEmail().matches(regex))
             throw new BadRequestException("Invalid Email");
 
-        if(registerDTO.getPassword().length() <8 )
+        if (registerDTO.getPassword().length() < 8)
             throw new BadRequestException("Invalid Password");
     }
 
-    public static void validateLogin(LoginDTO loginDTO) throws BadRequestException  {
+    public static void validateLogin(LoginDTO loginDTO) throws BadRequestException {
 
-        if(!loginDTO.getEmail().matches(regex))
+        if (!loginDTO.getEmail().matches(regex))
             throw new BadRequestException("Invalid Email");
 
-        if(loginDTO.getPassword().length() <8 )
+        if (loginDTO.getPassword().length() < 8)
             throw new BadRequestException("Invalid Password");
     }
 }

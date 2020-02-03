@@ -39,10 +39,10 @@ public class UserService {
 
     public boolean validateUser(LoginDTO loginDTO) {
         User user = userRepository.findByEmail(loginDTO.getEmail());
-        if(user == null)
+        if (user == null)
             return false;
 
-        if(user.getPassword().equals(loginDTO.getPassword()))
+        if (user.getPassword().equals(loginDTO.getPassword()))
             return true;
         return false;
     }
@@ -54,35 +54,27 @@ public class UserService {
     public String getToken(LoginDTO loginDTO) {
 
         User user = userRepository.findByEmailAndPassword(loginDTO.getEmail(), loginDTO.getPassword());
-        if(user == null)
+        if (user == null)
             return null;
 
         Optional<Token> optionalToken = tokenRepository.findById(user.getId());
         Token token;
-        if(optionalToken.isEmpty()) {
-
+        if (optionalToken.isEmpty()) {
             token = new Token();
             token.setToken(UUID.randomUUID().toString());
             user.setToken(token);
             token.setUser(user);
             userRepository.save(user);
-        }
-        else {
+        } else {
             token = optionalToken.get();
             token.setToken(UUID.randomUUID().toString());
             tokenRepository.save(token);
         }
-
-         return token.getToken();
+        return token.getToken();
     }
 
     public User getUserByToken(String token) {
-        User user = userRepository.findByTokenToken(token);
-
-        if(user == null)
-            return null;
-
-        return user;
+        return userRepository.findByTokenToken(token);
     }
 
     public void invalidateToken(String token) {
@@ -91,9 +83,8 @@ public class UserService {
 
     public User getUserById(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
-        if(optionalUser.isEmpty())
+        if (optionalUser.isEmpty())
             return null;
-
         User user = optionalUser.get();
         return user;
     }

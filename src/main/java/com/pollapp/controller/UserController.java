@@ -31,7 +31,6 @@ public class UserController {
         return userService.getUsers();
     }
 
-
     //USER REGISTRATION
     @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, value = "/signup")
