@@ -16,7 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
@@ -440,6 +442,32 @@ public class PollController {
 
     //******************************************************************************************************************
     //************************************** EMBEDDED PART *************************************************************
+
+    //GET CREATED POLLS
+    @GetMapping(value = "polls")
+    @CrossOrigin
+    public ResponseEntity<Object> getPolls(@RequestParam("token") String userToken) {
+        try {
+            UserValidator.validateUserToken(userToken);
+            User user = userService.getUserByToken(userToken);
+            if (user == null)
+                return new ResponseEntity<>("Invalid User Token", HttpStatus.UNAUTHORIZED);
+
+            List<Poll> pollList = user.getPolls();
+            List<PollResponseDTO> pollResponseDTOList = new ArrayList<>();
+            Iterator it = pollList.iterator();
+            while(it.hasNext()) {
+                pollResponseDTOList.add(new PollResponseDTO((Poll) it.next(),false));
+            }
+
+            return new ResponseEntity<>(pollResponseDTOList,HttpStatus.OK);
+
+        } catch (Exception e) {
+            log.info(e.toString());
+            return new ResponseEntity<>(e.toString(),HttpStatus.BAD_REQUEST);
+        }
+
+    }
 
     //SETTING EMBEDDED POLL
     @PutMapping(value = "embed/poll/{pollId}")
