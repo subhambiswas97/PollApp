@@ -184,14 +184,18 @@ public class PollController {
     @CrossOrigin
     public ResponseEntity<Object> createSinglePoll(@RequestBody SingleQuesPollDTO singleQuesPollDTO) {
         try {
+
+            UserValidator.validateUserToken(singleQuesPollDTO.getToken());
+
             if (singleQuesPollDTO.isPrivate())
                 log.info("true");
             else
                 log.info("false");
             log.info("Creation Checkpoint 1");
+            //log.info(singleQuesPollDTO.getToken());
             User user = userService.getUserByToken(singleQuesPollDTO.getToken());
             if (user == null)
-                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>("No User Present", HttpStatus.UNAUTHORIZED);
 
             log.info("Creation Checkpoint 2");
             String token = pollService.createSinglePoll(user, singleQuesPollDTO);
