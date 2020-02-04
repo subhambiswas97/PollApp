@@ -26,7 +26,7 @@ public class UserService {
     @Autowired
     private TokenRepository tokenRepository;
 
-    static Logger log = java.util.logging.Logger.getLogger(UserController.class.getName());
+    static Logger log = java.util.logging.Logger.getLogger(UserService.class.getName());
 
     public List<User> getUsers() {
         return (List<User>) userRepository.findAll();

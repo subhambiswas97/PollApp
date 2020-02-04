@@ -6,27 +6,20 @@ import com.pollapp.entity.Question;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
-public class PollResponseDTO {
+public class PollResponseMiniDTO {
 
     private String pollId;
+
     @JsonProperty
     private boolean isPrivate;
-    private List<QuestionResponsoDTO> questions;
 
-    public PollResponseDTO() {
+    public PollResponseMiniDTO() {
     }
 
-    public PollResponseDTO(final Poll poll,boolean isPrivate) {
+    public PollResponseMiniDTO(final Poll poll) {
         this.pollId = poll.getPollId();
         this.isPrivate = poll.isPrivate();
-        this.questions = new ArrayList<>();
-        Iterator it = poll.getQuestions().iterator();
-        while (it.hasNext()) {
-            questions.add(new QuestionResponsoDTO((Question) it.next() , isPrivate));
-        }
-
     }
 
     public String getPollId() {
@@ -43,13 +36,5 @@ public class PollResponseDTO {
 
     public void setPrivate(boolean aPrivate) {
         isPrivate = aPrivate;
-    }
-
-    public List<QuestionResponsoDTO> getQuestions() {
-        return questions;
-    }
-
-    public void setQuestions(List<QuestionResponsoDTO> questions) {
-        this.questions = questions;
     }
 }

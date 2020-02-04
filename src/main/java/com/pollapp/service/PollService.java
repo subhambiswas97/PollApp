@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 @Transactional
 public class PollService {
 
-    private static final Logger log = Logger.getLogger(UserController.class.getName());
+    private static final Logger log = Logger.getLogger(PollService.class.getName());
 
     @Autowired
     private PollRepository pollRepository;

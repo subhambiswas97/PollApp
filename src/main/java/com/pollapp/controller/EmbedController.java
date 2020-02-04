@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 @Controller
 public class EmbedController {
 
-    private static final Logger log = Logger.getLogger(UserController.class.getName());
+    private static final Logger log = Logger.getLogger(EmbedController.class.getName());
 
     @Autowired
     private PollService pollService;

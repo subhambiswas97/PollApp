@@ -4,6 +4,7 @@ import com.pollapp.dto.request.MultiVoteDetailDTO;
 import com.pollapp.dto.request.PollDetailDTO;
 import com.pollapp.dto.request.SingleQuesPollDTO;
 import com.pollapp.dto.response.PollResponseDTO;
+import com.pollapp.dto.response.PollResponseMiniDTO;
 import com.pollapp.entity.Poll;
 import com.pollapp.entity.User;
 import com.pollapp.exception.BadRequestException;
@@ -24,7 +25,7 @@ import java.util.logging.Logger;
 @RestController
 public class PollController {
 
-    private static final Logger log = Logger.getLogger(UserController.class.getName());
+    private static final Logger log = Logger.getLogger(PollController.class.getName());
 
     @Autowired
     private PollService pollService;
@@ -468,6 +469,32 @@ public class PollController {
         }
 
     }
+
+    @GetMapping(value = "polllist")
+    @CrossOrigin
+    public ResponseEntity<Object> getPollList(@RequestParam("token") String userToken) {
+        try {
+            UserValidator.validateUserToken(userToken);
+            User user = userService.getUserByToken(userToken);
+            if (user == null)
+                return new ResponseEntity<>("Invalid User Token", HttpStatus.UNAUTHORIZED);
+
+            List<Poll> pollList = user.getPolls();
+            List<PollResponseMiniDTO> pollResponseMiniDTOList = new ArrayList<>();
+            Iterator it = pollList.iterator();
+            while(it.hasNext()) {
+                pollResponseMiniDTOList.add(new PollResponseMiniDTO((Poll) it.next()));
+            }
+
+            return new ResponseEntity<>(pollResponseMiniDTOList,HttpStatus.OK);
+
+        } catch (Exception e) {
+            log.info(e.toString());
+            return new ResponseEntity<>(e.toString(),HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
 
     //SETTING EMBEDDED POLL
     @PutMapping(value = "embed/poll/{pollId}")
