@@ -57,14 +57,16 @@ public class UserService {
         if (user == null)
             return null;
 
-        Optional<Token> optionalToken = tokenRepository.findById(user.getId());
+        //Optional<Token> optionalToken = tokenRepository.findBy(user.getId());
+        Optional<Token> optionalToken = tokenRepository.findByUserId(user.getId());
         Token token;
         if (optionalToken.isEmpty()) {
             token = new Token();
             token.setToken(UUID.randomUUID().toString());
-            user.setToken(token);
+            //user.setToken(token);
             token.setUser(user);
-            userRepository.save(user);
+            //userRepository.save(user);
+            tokenRepository.save(token);
         } else {
             token = optionalToken.get();
             token.setToken(UUID.randomUUID().toString());
@@ -74,7 +76,12 @@ public class UserService {
     }
 
     public User getUserByToken(String token) {
-        return userRepository.findByTokenToken(token);
+
+        //return userRepository.findByTokenToken(token);
+        Token fetchedToken  = tokenRepository.findByToken(token);
+        if(fetchedToken==null)
+            return null;
+        return fetchedToken.getUser();
     }
 
     public void invalidateToken(String token) {

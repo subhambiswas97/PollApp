@@ -7,10 +7,7 @@ import com.pollapp.dto.request.QuestionDTO;
 import com.pollapp.dto.request.SingleQuesPollDTO;
 import com.pollapp.entity.*;
 import com.pollapp.exception.BadRequestException;
-import com.pollapp.repository.OptionRepository;
-import com.pollapp.repository.PollRepository;
-import com.pollapp.repository.QuestionRepository;
-import com.pollapp.repository.UserRepository;
+import com.pollapp.repository.*;
 import com.pollapp.validator.PollValidator;
 import org.apache.catalina.webresources.JarResourceSet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +34,12 @@ public class PollService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PublicTokenRepository publicTokenRepository;
+
+    @Autowired
+    private PrivateVoteRepository privateVoteRepository;
 
 
     public String createPoll(User user, PollDetailDTO pollDetailDTO) throws BadRequestException {
@@ -123,7 +126,7 @@ public class PollService {
 
             Option option = new Option();
             option.setOption((String) it.next());
-            System.out.println(option.getOption());
+            log.info(option.getOption());
             option.setQuestion(question);
 
             options.add(option);
@@ -168,48 +171,54 @@ public class PollService {
 
         PollValidator.checkOptionQuestionPollSame(pollId, questionId, option);
 
-
         if (option.getVotedBy().contains(user))
             throw new BadRequestException("Cannot vote twice");
-
         Poll poll = option.getQuestion().getPoll();
         PrivateVote privateVote = new PrivateVote();
         privateVote.setUserId(user.getId());
         privateVote.setPoll(poll);
-        poll.addPrivateVotes(privateVote);
+        //poll.addPrivateVotes(privateVote);
 
         option.setVotes(option.getVotes() + 1);
         option.addVotedBy(user);
         user.addVotedOptions(option);
+
+        privateVoteRepository.save(privateVote);
         optionRepository.save(option);
         return true;
 
     }
 
     public boolean hasPublicTokenVoted(Poll poll, String userToken) {
-
-        List<PublicToken> votedTokens = poll.getPublicTokens();
-        PublicToken publicToken;
-        Iterator it = votedTokens.iterator();
-        while (it.hasNext()) {
-            publicToken = (PublicToken) it.next();
-            if (publicToken.getToken().equals(userToken))
-                return true;
-        }
-        return false;
+//
+//        List<PublicToken> votedTokens = poll.getPublicTokens();
+//        PublicToken publicToken;
+//        Iterator it = votedTokens.iterator();
+//        while (it.hasNext()) {
+//            publicToken = (PublicToken) it.next();
+//            if (publicToken.getToken().equals(userToken))
+//                return true;
+//        }
+        Optional<PublicToken> optionalPublicToken = publicTokenRepository.findByTokenAndPollPollId(userToken,poll.getPollId());
+        if(optionalPublicToken.isEmpty())
+            return false;
+        return true;
     }
 
     public boolean hasPrivateVoted(Poll poll, Long userId) {
 
-        List<PrivateVote> privateVotes = poll.getPrivateVotes();
-        PrivateVote privateVote;
-        Iterator it = privateVotes.iterator();
-        while (it.hasNext()) {
-            privateVote = (PrivateVote) it.next();
-            if (privateVote.getUserId() == userId)
-                return true;
-        }
-        return false;
+//        List<PrivateVote> privateVotes = poll.getPrivateVotes();
+//        PrivateVote privateVote;
+//        Iterator it = privateVotes.iterator();
+//        while (it.hasNext()) {
+//            privateVote = (PrivateVote) it.next();
+//            if (privateVote.getUserId() == userId)
+//                return true;
+//        }
+        Optional<PrivateVote> optionalPrivateVote = privateVoteRepository.findByUserIdAndPollPollId(userId,poll.getPollId());
+        if(optionalPrivateVote.isEmpty())
+            return false;
+        return true;
     }
 
     public boolean updatePublicValidatedVote(String userToken, Long questionId, Long optionId) {
@@ -224,8 +233,9 @@ public class PollService {
         PublicToken publicToken = new PublicToken();
         publicToken.setPoll(poll);
         publicToken.setToken(userToken);
-        poll.addPublicTokens(publicToken);
+        //poll.addPublicTokens(publicToken);
         option.setVotes(option.getVotes() + 1);
+        publicTokenRepository.save(publicToken);
         optionRepository.save(option);
         return true;
     }
@@ -307,17 +317,24 @@ public class PollService {
             PrivateVote privateVote = new PrivateVote();
             privateVote.setUserId(((User) userTokenOrUser).getId());
             privateVote.setPoll(poll);
-            poll.addPrivateVotes(privateVote);
+            //poll.addPrivateVotes(privateVote);
+            privateVoteRepository.save(privateVote);
         }
         else {
             PublicToken publicToken = new PublicToken();
             publicToken.setPoll(poll);
             publicToken.setToken((String) userTokenOrUser);
-            poll.addPublicTokens(publicToken);
+            //poll.addPublicTokens(publicToken);
+            publicTokenRepository.save(publicToken);
         }
 
         pollRepository.save(poll);
 
         return true;
+    }
+
+    public List<Poll> getUserPolls(Long userId) {
+        List<Poll> polls = pollRepository.findAllByUserId(userId);
+        return polls;
     }
 }

@@ -12,15 +12,18 @@ public class Token {
 
     @Id
     @Column(name = "id")
+    @SequenceGenerator(name="tokenSequenceGenerator", sequenceName = "tokenSequence", initialValue = 1,allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tokenSequenceGenerator")
     private Long id;
 
     @NotNull
     @Column(unique = true)
     private String token;
 
-    @OneToOne
-    @MapsId
-    @JsonIgnoreProperties("token")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="user_id")
+    //@MapsId
+    //@JsonIgnoreProperties("token")
     private User user;
 
     public Token() {

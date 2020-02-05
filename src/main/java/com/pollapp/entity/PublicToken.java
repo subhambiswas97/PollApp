@@ -20,7 +20,7 @@ public class PublicToken {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "poll_id")
-    @JsonIgnoreProperties("publicTokens")
+    //@JsonIgnoreProperties("publicTokens")
     private Poll poll;
 
     public PublicToken() {

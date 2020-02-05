@@ -23,21 +23,21 @@ public class Poll {
     private List<Question> questions;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id")
     @JsonIgnoreProperties(value = {"polls","embedded_poll"})
     private User user;
 
-    @OneToMany(mappedBy = "poll",cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("poll")
-    private List<PublicToken> publicTokens;
+    //@OneToMany(mappedBy = "poll",cascade = CascadeType.ALL)
+    //@JsonIgnoreProperties("poll")
+    //private List<PublicToken> publicTokens;
 
-    @OneToMany(mappedBy = "poll",cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("poll")
-    private List<PrivateVote> privateVotes;
+//    @OneToMany(mappedBy = "poll",cascade = CascadeType.ALL)
+//    @JsonIgnoreProperties("poll")
+//    private List<PrivateVote> privateVotes;
 
     public Poll() {
-        this.publicTokens = new ArrayList<>();
-        this.privateVotes = new ArrayList<>();
+        //this.publicTokens = new ArrayList<>();
+        //this.privateVotes = new ArrayList<>();
     }
 
     public String getPollId() {
@@ -72,27 +72,27 @@ public class Poll {
         isPrivate = aPrivate;
     }
 
-    public List<PublicToken> getPublicTokens() {
-        return publicTokens;
-    }
-
-    public void setPublicTokens(List<PublicToken> publicTokens) {
-        this.publicTokens = publicTokens;
-    }
-
-    public void addPublicTokens(PublicToken publicToken) {
-        this.publicTokens.add(publicToken);
-    }
-
-    public List<PrivateVote> getPrivateVotes() {
-        return privateVotes;
-    }
-
-    public void setPrivateVotes(List<PrivateVote> privateVotes) {
-        this.privateVotes = privateVotes;
-    }
-
-    public void addPrivateVotes(PrivateVote privateVote) {
-        this.privateVotes.add(privateVote);
-    }
+//    public List<PublicToken> getPublicTokens() {
+//        return publicTokens;
+//    }
+//
+//    public void setPublicTokens(List<PublicToken> publicTokens) {
+//        this.publicTokens = publicTokens;
+//    }
+//
+//    public void addPublicTokens(PublicToken publicToken) {
+//        this.publicTokens.add(publicToken);
+//    }
+//
+//    public List<PrivateVote> getPrivateVotes() {
+//        return privateVotes;
+//    }
+//
+//    public void setPrivateVotes(List<PrivateVote> privateVotes) {
+//        this.privateVotes = privateVotes;
+//    }
+//
+//    public void addPrivateVotes(PrivateVote privateVote) {
+//        this.privateVotes.add(privateVote);
+//    }
 }

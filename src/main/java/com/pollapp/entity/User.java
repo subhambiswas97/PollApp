@@ -31,9 +31,11 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("user")
-    private Token token;
+    //@OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    //@OneToOne(cascade = CascadeType.ALL)
+    //@JoinColumn(name="token_id")
+    //@JsonIgnoreProperties("user")
+    //private Token token;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     @JsonIgnoreProperties("user")
@@ -69,14 +71,14 @@ public class User {
         this.id = id;
     }
 
-    public Token getToken() {
+    /*public Token getToken() {
         return token;
     }
 
     public void setToken(Token token) {
         this.token = token;
     }
-
+*/
     public String getEmail() {
         return email;
     }

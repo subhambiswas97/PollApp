@@ -458,7 +458,8 @@ public class PollController {
             if (user == null)
                 return new ResponseEntity<>("Invalid User Token", HttpStatus.UNAUTHORIZED);
 
-            List<Poll> pollList = user.getPolls();
+            //List<Poll> pollList = user.getPolls();
+            List<Poll> pollList = pollService.getUserPolls(user.getId());
             List<PollResponseDTO> pollResponseDTOList = new ArrayList<>();
             Iterator it = pollList.iterator();
             while(it.hasNext()) {
@@ -474,6 +475,7 @@ public class PollController {
 
     }
 
+    //GET LIST OF POLL IDS AND PRIVATE/PUBLIC
     @GetMapping(value = "polllist")
     @CrossOrigin
     public ResponseEntity<Object> getPollList(@RequestParam("token") String userToken) {
@@ -483,7 +485,8 @@ public class PollController {
             if (user == null)
                 return new ResponseEntity<>("Invalid User Token", HttpStatus.UNAUTHORIZED);
 
-            List<Poll> pollList = user.getPolls();
+            //List<Poll> pollList = user.getPolls();
+            List<Poll> pollList = pollService.getUserPolls(user.getId());
             List<PollResponseMiniDTO> pollResponseMiniDTOList = new ArrayList<>();
             Iterator it = pollList.iterator();
             while(it.hasNext()) {
