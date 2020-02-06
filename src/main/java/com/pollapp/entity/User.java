@@ -37,23 +37,23 @@ public class User {
     //@JsonIgnoreProperties("user")
     //private Token token;
 
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("user")
-    private List<Poll> polls;
+//    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+//    @JsonIgnoreProperties("user")
+//    private List<Poll> polls;
 
-    @ManyToMany(mappedBy = "votedBy")
-    @JsonIgnoreProperties("votedBy")
-    private List<Option> votedOptions;
+//    @ManyToMany(mappedBy = "votedBy",fetch = FetchType.LAZY)
+//    @JsonIgnoreProperties("votedBy")
+//    private List<Option> votedOptions;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "embedded_poll")
     @JsonIgnoreProperties("user")
     private Poll embeddedPoll;
 
     public User() {
 
-        polls = new ArrayList<>();
-        this.votedOptions = new ArrayList<>();
+        //polls = new ArrayList<>();
+        //this.votedOptions = new ArrayList<>();
     }
 
     public User(String email, String firstName, String lastName, String password) {
@@ -110,28 +110,28 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+//
+//    public List<Poll> getPolls() {
+//        return polls;
+//    }
+//
+//    public void setPolls(List<Poll> polls) {
+//        this.polls = polls;
+//    }
+//
+//    public void addPolls(Poll poll) { this.polls.add(poll); }
 
-    public List<Poll> getPolls() {
-        return polls;
-    }
-
-    public void setPolls(List<Poll> polls) {
-        this.polls = polls;
-    }
-
-    public void addPolls(Poll poll) { this.polls.add(poll); }
-
-    public List<Option> getVotedOptions() {
-        return votedOptions;
-    }
-
-    public void setVotedOptions(List<Option> votedOptions) {
-        this.votedOptions = votedOptions;
-    }
-
-    public void addVotedOptions(Option option) {
-        this.votedOptions.add(option);
-    }
+//    public List<Option> getVotedOptions() {
+//        return votedOptions;
+//    }
+//
+//    public void setVotedOptions(List<Option> votedOptions) {
+//        this.votedOptions = votedOptions;
+//    }
+//
+//    public void addVotedOptions(Option option) {
+//        this.votedOptions.add(option);
+//    }
 
     public Poll getEmbeddedPoll() {
         return embeddedPoll;

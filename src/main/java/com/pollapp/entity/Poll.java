@@ -18,13 +18,13 @@ public class Poll {
     @Column(name = "is_private")
     private boolean isPrivate = false;
 
-    @OneToMany(mappedBy = "poll",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "poll",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnoreProperties("poll")
     private List<Question> questions;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonIgnoreProperties(value = {"polls","embedded_poll"})
+    @JsonIgnoreProperties(value = {"embedded_poll"})
     private User user;
 
     //@OneToMany(mappedBy = "poll",cascade = CascadeType.ALL)

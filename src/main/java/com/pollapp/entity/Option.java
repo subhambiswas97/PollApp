@@ -22,7 +22,7 @@ public class Option {
     @Column(name = "_option")
     private String option;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
     @JsonIgnoreProperties("options")
     private Question question;
@@ -30,15 +30,16 @@ public class Option {
     @Column(name = "votes")
     private int votes = 0;
 
-    @ManyToMany
-    @JoinTable(name = "vote_user",
-    joinColumns = @JoinColumn(name = "option_id"),
-    inverseJoinColumns = @JoinColumn(name = "user_id"))
-    @JsonIgnoreProperties("votedOptions")
-    private List<User> votedBy;
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinTable(name = "vote_user",
+//    joinColumns = @JoinColumn(name = "option_id"),
+//    inverseJoinColumns = @JoinColumn(name = "user_id"))
+//    @JsonIgnoreProperties("votedOptions")
+//    private List<User> votedBy;
 
     public Option() {
-        this.votedBy = new ArrayList<>();
+
+        //this.votedBy = new ArrayList<>();
     }
 
     public Long getOptionId() {
@@ -73,15 +74,15 @@ public class Option {
         this.votes = votes;
     }
 
-    public List<User> getVotedBy() {
-        return votedBy;
-    }
-
-    public void setVotedBy(List<User> votedBy) {
-        this.votedBy = votedBy;
-    }
-
-    public void addVotedBy(User user) {
-        this.votedBy.add(user);
-    }
+//    public List<User> getVotedBy() {
+//        return votedBy;
+//    }
+//
+//    public void setVotedBy(List<User> votedBy) {
+//        this.votedBy = votedBy;
+//    }
+//
+//    public void addVotedBy(User user) {
+//        this.votedBy.add(user);
+//    }
 }

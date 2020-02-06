@@ -21,7 +21,7 @@ public class Question {
     @Column(name = "_question")
     private String question;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "poll_id")
     @JsonIgnoreProperties("questions")
     private Poll poll;

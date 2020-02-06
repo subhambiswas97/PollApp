@@ -5,6 +5,8 @@ import com.pollapp.dto.request.PollDetailDTO;
 import com.pollapp.dto.request.SingleQuesPollDTO;
 import com.pollapp.dto.response.PollResponseDTO;
 import com.pollapp.dto.response.PollResponseMiniDTO;
+import com.pollapp.dto.response.VoterDTO;
+import com.pollapp.entity.Option;
 import com.pollapp.entity.Poll;
 import com.pollapp.entity.User;
 import com.pollapp.exception.BadRequestException;
@@ -146,7 +148,7 @@ public class PollController {
                 if(user==null)
                     return new ResponseEntity<>("Invalid User Token",HttpStatus.UNAUTHORIZED);
 
-                if(pollService.hasPrivateVoted(poll,user.getId()))
+                if(pollService.hasPrivateVoted(poll.getPollId(),user.getId()))
                     return new ResponseEntity<>("Already Voted for this Poll",HttpStatus.FORBIDDEN);
 
                 if(user.getId()==poll.getUser().getId())
@@ -157,7 +159,7 @@ public class PollController {
 
             } else {
 
-                boolean hasVoted = pollService.hasPublicTokenVoted(poll, userToken);
+                boolean hasVoted = pollService.hasPublicTokenVoted(poll.getPollId(), userToken);
                 if (hasVoted)
                     return new ResponseEntity<>("Already Voted for this Poll", HttpStatus.FORBIDDEN);
 
@@ -325,7 +327,7 @@ public class PollController {
                     return new ResponseEntity<>("Invalid User Token", HttpStatus.UNAUTHORIZED);
 
 
-                if (pollService.hasPrivateVoted(poll, user.getId()))
+                if (pollService.hasPrivateVoted(poll.getPollId(), user.getId()))
                     return new ResponseEntity<>("Already Voted for this Poll", HttpStatus.FORBIDDEN);
 
                 PollResponseDTO pollResponseDTO = new PollResponseDTO(poll, false);
@@ -333,7 +335,7 @@ public class PollController {
 
             } else {
 
-                boolean hasVoted = pollService.hasPublicTokenVoted(poll, userToken);
+                boolean hasVoted = pollService.hasPublicTokenVoted(poll.getPollId(), userToken);
 
                 if (hasVoted)
                     return new ResponseEntity<>("Already Voted for this Poll", HttpStatus.FORBIDDEN);
@@ -377,7 +379,7 @@ public class PollController {
                 if (user == null)
                     return new ResponseEntity<>("Invalid User Token", HttpStatus.UNAUTHORIZED);
 
-                if (pollService.hasPrivateVoted(poll, user.getId()))
+                if (pollService.hasPrivateVoted(poll.getPollId(), user.getId()))
                     return new ResponseEntity<>("Already Voted for this Poll", HttpStatus.FORBIDDEN);
 
                 if (user.getId() == poll.getUser().getId())
@@ -387,11 +389,11 @@ public class PollController {
 
             } else {
 
-                boolean hasVoted = pollService.hasPublicTokenVoted(poll, userToken);
+                boolean hasVoted = pollService.hasPublicTokenVoted(poll.getPollId(), userToken);
                 if (hasVoted)
                     return new ResponseEntity<>("Already Voted for this Poll", HttpStatus.FORBIDDEN);
 
-                updated = pollService.updatePublicValidatedVote(userToken, questionId, optionId);
+                updated = pollService.updatePublicValidatedVote(userToken,pollId, questionId, optionId);
 
             }
             poll = pollService.getPoll(pollId);
@@ -442,6 +444,35 @@ public class PollController {
             log.info(e.toString());
             return new ResponseEntity<>(e.toString(), HttpStatus.BAD_REQUEST);
 
+        }
+    }
+
+    @GetMapping(value = "/option/{optionId}/status")
+    @CrossOrigin
+    public ResponseEntity<Object> getVoters(@PathVariable("optionId") Long optionId,
+                                            @RequestParam(name = "token", required = true) String userToken) {
+        try {
+            UserValidator.validateUserToken(userToken);
+
+            User user = userService.getUserByToken(userToken);
+            if (user == null)
+                return new ResponseEntity<>("Invalid User Token", HttpStatus.UNAUTHORIZED);
+
+
+            Option option = pollService.getOption(optionId);
+            if (option == null)
+                return new ResponseEntity<>("No Option by this OptionID", HttpStatus.NO_CONTENT);
+
+            if (option.getQuestion().getPoll().getUser().getId() != user.getId())
+                return new ResponseEntity<>("Option Belongs to Other Account", HttpStatus.UNAUTHORIZED);
+
+            List<VoterDTO> voterDTOList = pollService.getVoters(optionId);
+
+            return new ResponseEntity<>(voterDTOList,HttpStatus.OK);
+
+        } catch (Exception e) {
+            log.info(e.toString());
+            return new ResponseEntity<>(e.toString(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -520,10 +551,13 @@ public class PollController {
             if (poll == null)
                 return new ResponseEntity<>("No Poll by this PollID", HttpStatus.NO_CONTENT);
 
+            if(poll.getUser().getId()!=user.getId())
+                return new ResponseEntity<>("Poll Doesnot belong to this user",HttpStatus.UNAUTHORIZED);
+
             if (poll.isPrivate())
                 return new ResponseEntity<>("Only Public Polls Can be Embedded ", HttpStatus.BAD_REQUEST);
 
-            pollService.setEmbeddedPoll(user, poll);
+            pollService.setEmbeddedPoll(poll.getPollId(), user.getId());
             return new ResponseEntity<>("Success", HttpStatus.OK);
 
 
@@ -551,7 +585,7 @@ public class PollController {
             if (poll == null)
                 return new ResponseEntity<>("No Embedding Has Been Set", HttpStatus.NOT_FOUND);
 
-            boolean hasVoted = pollService.hasPublicTokenVoted(poll, userToken);
+            boolean hasVoted = pollService.hasPublicTokenVoted(poll.getPollId(), userToken);
             if (hasVoted)
                 return new ResponseEntity<>("Already Voted for this Poll", HttpStatus.FORBIDDEN);
 
@@ -591,12 +625,12 @@ public class PollController {
             if (isPrivate)
                 return new ResponseEntity<>("Only Public Polls Can be Voted ", HttpStatus.BAD_REQUEST);
 
-            boolean hasVoted = pollService.hasPublicTokenVoted(poll, userToken);
+            boolean hasVoted = pollService.hasPublicTokenVoted(poll.getPollId(), userToken);
             if (hasVoted)
                 return new ResponseEntity<>("Already Voted for this Poll", HttpStatus.FORBIDDEN);
 
             boolean updated;
-            updated = pollService.updatePublicValidatedVote(userToken, questionId, optionId);
+            updated = pollService.updatePublicValidatedVote(userToken,poll.getPollId(), questionId, optionId);
 
             poll = pollService.getPoll(poll.getPollId());
             if (poll == null)

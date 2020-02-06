@@ -4,20 +4,24 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "public_tokens")
-public class PublicToken {
+@IdClass(value = PublicTokenId.class)
+public class PublicToken implements Serializable {
+
+//    @Id
+//    @Column(name = "pubic_token_id")
+//    @SequenceGenerator(name="publicTokenSequenceGenerator", sequenceName = "publicTokenSequence", initialValue = 1,allocationSize = 1)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "publicTokenSequenceGenerator")
+//    private Long publicTokenId;
 
     @Id
-    @Column(name = "pubic_token_id")
-    @SequenceGenerator(name="publicTokenSequenceGenerator", sequenceName = "publicTokenSequence", initialValue = 1,allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "publicTokenSequenceGenerator")
-    private Long publicTokenId;
-
     @NotNull
     private String token;
 
+    @Id
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "poll_id")
     //@JsonIgnoreProperties("publicTokens")
@@ -26,13 +30,13 @@ public class PublicToken {
     public PublicToken() {
     }
 
-    public Long getPublicTokenId() {
-        return publicTokenId;
-    }
-
-    public void setPublicTokenId(Long publicTokenId) {
-        this.publicTokenId = publicTokenId;
-    }
+//    public Long getPublicTokenId() {
+//        return publicTokenId;
+//    }
+//
+//    public void setPublicTokenId(Long publicTokenId) {
+//        this.publicTokenId = publicTokenId;
+//    }
 
     public String getToken() {
         return token;

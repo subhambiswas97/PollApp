@@ -24,10 +24,10 @@ public class OptionResponseDTO {
         this.voterDTOS = new ArrayList<>();
         if(isPrivate) {
             //System.out.println("It is Private");
-            Iterator it = option.getVotedBy().iterator();
-            while(it.hasNext()) {
-                this.voterDTOS.add(new VoterDTO((User) it.next()));
-            }
+            //Iterator it = option.getVotedBy().iterator();
+            //while(it.hasNext()) {
+            //    this.voterDTOS.add(new VoterDTO((User) it.next()));
+            //}
         }
 
     }

@@ -1,10 +1,12 @@
 package com.pollapp.service;
 
 import com.pollapp.controller.UserController;
+import com.pollapp.dto.CountDTO;
 import com.pollapp.dto.request.OptionDTO;
 import com.pollapp.dto.request.PollDetailDTO;
 import com.pollapp.dto.request.QuestionDTO;
 import com.pollapp.dto.request.SingleQuesPollDTO;
+import com.pollapp.dto.response.VoterDTO;
 import com.pollapp.entity.*;
 import com.pollapp.exception.BadRequestException;
 import com.pollapp.repository.*;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -40,6 +43,9 @@ public class PollService {
 
     @Autowired
     private PrivateVoteRepository privateVoteRepository;
+
+    @Autowired
+    private VoteUserRepository voteUserRepository;
 
 
     public String createPoll(User user, PollDetailDTO pollDetailDTO) throws BadRequestException {
@@ -77,7 +83,7 @@ public class PollService {
 
         poll.setQuestions(questions);
         poll.setUser(user);
-        user.addPolls(poll);
+        //user.addPolls(poll);
 
         String pollID = UUID.randomUUID().toString();
         poll.setPollId(pollID);
@@ -91,6 +97,33 @@ public class PollService {
             return null;
         return optionalPoll.get();
 
+    }
+
+    public Option getOption(Long optionId) {
+        Optional<Option> optionalOption = optionRepository.findById(optionId);
+        if (optionalOption.isEmpty())
+            return null;
+        return optionalOption.get();
+    }
+
+    public List<VoterDTO> getVoters(Long optionId) {
+
+        List<VoteUser> voteUserList = voteUserRepository.findByOptionOptionId(optionId);
+
+        List<VoterDTO> voterDTOList = new ArrayList<>();
+
+        if(voteUserList.isEmpty())
+            return voterDTOList;
+
+        User user;
+
+        Iterator it = voteUserList.iterator();
+        while (it.hasNext()) {
+            user = ((VoteUser) it.next()).getUser();
+            voterDTOList.add(new VoterDTO(user));
+        }
+
+        return voterDTOList;
     }
 
     public boolean updateVote(Long questionId, Long optionId) {
@@ -137,7 +170,7 @@ public class PollService {
 
         poll.setQuestions(questions);
         poll.setUser(user);
-        user.addPolls(poll);
+        //user.addPolls(poll);
 
         String pollID = UUID.randomUUID().toString();
         poll.setPollId(pollID);
@@ -164,86 +197,105 @@ public class PollService {
                                        Long questionId,
                                        Long optionId) throws Exception, BadRequestException {
 
-        Optional<Option> optionalOption = optionRepository.findById(optionId);
-        if (optionalOption.isEmpty())
-            return false;
-        Option option = optionalOption.get();
+//        Optional<Object> optionalCountDTO = questionRepository.getOptionQuestionPollValidation(optionId,questionId,pollId);
+//        if(optionalCountDTO.isEmpty())
+//            throw new Exception("Query Fetch Error");
+//        else if(((BigInteger)optionalCountDTO.get()).longValue()==0)
+//            throw new Exception("Question or Option doesnot belong to the same poll");
+//
+//        Optional<Option> optionalOption = optionRepository.findById(optionId);
+//        if (optionalOption.isEmpty())
+//            return false;
+//        Option option = optionalOption.get();
 
-        PollValidator.checkOptionQuestionPollSame(pollId, questionId, option);
 
-        if (option.getVotedBy().contains(user))
-            throw new BadRequestException("Cannot vote twice");
-        Poll poll = option.getQuestion().getPoll();
-        PrivateVote privateVote = new PrivateVote();
-        privateVote.setUserId(user.getId());
-        privateVote.setPoll(poll);
+
+        //PollValidator.checkOptionQuestionPollSame(pollId, questionId, option);
+
+//        if (option.getVotedBy().contains(user))
+//            throw new BadRequestException("Cannot vote twice");
+//        Poll poll = option.getQuestion().getPoll();
+        //PrivateVote privateVote = new PrivateVote();
+        //privateVote.setUserId(user.getId());
+        //privateVote.setPoll(poll);
         //poll.addPrivateVotes(privateVote);
 
-        option.setVotes(option.getVotes() + 1);
-        option.addVotedBy(user);
-        user.addVotedOptions(option);
+//        option.setVotes(option.getVotes() + 1);
+//        option.addVotedBy(user);
+//        user.addVotedOptions(option);
 
-        privateVoteRepository.save(privateVote);
-        optionRepository.save(option);
+        //VoteUser voteUser = new VoteUser();
+        //voteUser.setOption(option);
+        //voteUser.setUser(user);
+
+        //privateVoteRepository.save(privateVote);
+        //optionRepository.save(option);
+        int result = optionRepository.updateVoteByQuestionIdAndOptionIdAndPollId(optionId,questionId,pollId);
+        log.info("Private  vote update : "+ result);
+        if(result==0)
+            throw new Exception("Option/Question/Poll Id not same ");
+        //optionRepository.updateUserVotes(optionId,user.getId());
+        privateVoteRepository.recordPrivateVote(pollId,user.getId());
+        log.info("optionId : " + optionId + " userId" + user.getId());
+        result = voteUserRepository.addVoteUser(optionId,user.getId());
+        //voteUserRepository.save(voteUser);
+        log.info("Vote Recorded : " + result);
         return true;
 
     }
 
-    public boolean hasPublicTokenVoted(Poll poll, String userToken) {
-//
-//        List<PublicToken> votedTokens = poll.getPublicTokens();
-//        PublicToken publicToken;
-//        Iterator it = votedTokens.iterator();
-//        while (it.hasNext()) {
-//            publicToken = (PublicToken) it.next();
-//            if (publicToken.getToken().equals(userToken))
-//                return true;
-//        }
-        Optional<PublicToken> optionalPublicToken = publicTokenRepository.findByTokenAndPollPollId(userToken,poll.getPollId());
+    public boolean hasPublicTokenVoted(String pollId, String userToken) {
+
+        Optional<PublicToken> optionalPublicToken = publicTokenRepository.findByTokenAndPollPollId(userToken,pollId);
         if(optionalPublicToken.isEmpty())
             return false;
         return true;
     }
 
-    public boolean hasPrivateVoted(Poll poll, Long userId) {
+    public boolean hasPrivateVoted(String pollId, Long userId) {
 
-//        List<PrivateVote> privateVotes = poll.getPrivateVotes();
-//        PrivateVote privateVote;
-//        Iterator it = privateVotes.iterator();
-//        while (it.hasNext()) {
-//            privateVote = (PrivateVote) it.next();
-//            if (privateVote.getUserId() == userId)
-//                return true;
-//        }
-        Optional<PrivateVote> optionalPrivateVote = privateVoteRepository.findByUserIdAndPollPollId(userId,poll.getPollId());
+        Optional<PrivateVote> optionalPrivateVote = privateVoteRepository.findByUserIdAndPollPollId(userId,pollId);
         if(optionalPrivateVote.isEmpty())
             return false;
         return true;
     }
 
-    public boolean updatePublicValidatedVote(String userToken, Long questionId, Long optionId) {
+    public boolean updatePublicValidatedVote(String userToken, String pollId, Long questionId, Long optionId) throws Exception {
 
 
-        Optional<Option> optionalOption = optionRepository.findById(optionId);
-        if (optionalOption.isEmpty())
-            return false;
-        Option option = optionalOption.get();
+//        Optional<Object> optionalCountDTO = questionRepository.getOptionQuestionPollValidation(optionId,questionId,pollId);
+//        if(optionalCountDTO.isEmpty())
+//            throw new Exception("Query Fetch Error");
+//        else if(((BigInteger)optionalCountDTO.get()).longValue()==0)
+//            throw new Exception("Question or Option doesnot belong to the same poll");
+//
+//        Optional<Option> optionalOption = optionRepository.findById(optionId);
+//        if (optionalOption.isEmpty())
+//            return false;
+//        Option option = optionalOption.get();
+//
+//        Poll poll = option.getQuestion().getPoll();
 
-        Poll poll = option.getQuestion().getPoll();
-        PublicToken publicToken = new PublicToken();
-        publicToken.setPoll(poll);
-        publicToken.setToken(userToken);
+        //PublicToken publicToken = new PublicToken();
+        //publicToken.setPoll(poll);
+        //publicToken.setToken(userToken);
         //poll.addPublicTokens(publicToken);
-        option.setVotes(option.getVotes() + 1);
-        publicTokenRepository.save(publicToken);
-        optionRepository.save(option);
+        //option.setVotes(option.getVotes() + 1);
+        //publicTokenRepository.save(publicToken);
+        int result = optionRepository.updateVoteByQuestionIdAndOptionIdAndPollId(optionId,questionId,pollId);
+        log.info("Public Token update : "+ result);
+        if(result==0)
+            throw new Exception("Option/Question/Poll Id not same ");
+        publicTokenRepository.recordPublicToken(pollId,userToken);
+        //optionRepository.save(option);
         return true;
     }
 
-    public void setEmbeddedPoll(User user, Poll poll) throws Exception {
+    public void setEmbeddedPoll(String pollId, Long userId) throws Exception {
 
-        user.setEmbeddedPoll(poll);
-        userRepository.save(user);
+        //user.setEmbeddedPoll(poll);
+        //userRepository.save(user);
+        userRepository.setEmbeddedPoll(pollId, userId);
     }
 
     public boolean updateMultiVote(boolean isPrivate,
@@ -288,8 +340,10 @@ public class PollService {
                     option.setVotes(option.getVotes() + 1);
 
                     if(isPrivate) {
-                        option.addVotedBy((User) userTokenOrUser);
-                        ((User) userTokenOrUser).addVotedOptions(option);
+                        //option.addVotedBy((User) userTokenOrUser);
+                        //((User) userTokenOrUser).addVotedOptions(option);
+                        voteUserRepository.addVoteUser(optionId,((User) userTokenOrUser).getId());
+
                     }
 
                     //optionList.set(j,option);
