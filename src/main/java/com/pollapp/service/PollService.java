@@ -43,11 +43,11 @@ public class PollService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private PublicTokenRepository publicTokenRepository;
-
-    @Autowired
-    private PrivateVoteRepository privateVoteRepository;
+//    @Autowired
+//    private PublicTokenRepository publicTokenRepository;
+//
+//    @Autowired
+//    private PrivateVoteRepository privateVoteRepository;
 
     @Autowired
     private VoteUserRepository voteUserRepository;

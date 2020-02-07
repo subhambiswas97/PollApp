@@ -1,7 +1,6 @@
 package com.pollapp.repository;
 
 import com.pollapp.entity.VoteUser;
-import com.pollapp.entity.VoteUserId;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
