@@ -24,8 +24,6 @@ public class VoterRecord {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "is_private",nullable = false)
-    private boolean isPrivate;
 
     public VoterRecord() {
     }
@@ -60,13 +58,5 @@ public class VoterRecord {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public boolean isPrivate() {
-        return isPrivate;
-    }
-
-    public void setPrivate(boolean aPrivate) {
-        isPrivate = aPrivate;
     }
 }

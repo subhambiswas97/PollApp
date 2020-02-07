@@ -313,13 +313,25 @@ public class PollService {
         VoteUser voteUser = new VoteUser();
         voteUser.setUser(user);
         voteUser.setOption(option);
+        voteUser.setPoll(poll);
+
+//        Date date = new Date();
+//        Calendar cal = Calendar.getInstance();
+//        cal.setTime(date);
+//        cal.set(Calendar.HOUR_OF_DAY, 0);
+//        cal.set(Calendar.MINUTE, 0);
+//        cal.set(Calendar.SECOND, 0);
+//        cal.set(Calendar.MILLISECOND, 0);
+//        date = cal.getTime();
+
+        voteUser.setDate(new Date());
         voteUserRepository.save(voteUser);
 
         log.info("Vote Checkpoint 2");
 
         VoterRecord voterRecord = new VoterRecord();
         voterRecord.setPoll(poll);
-        voterRecord.setPrivate(poll.isPrivate());
+        //voterRecord.setPrivate(poll.isPrivate());
         voterRecord.setUser(user);
         voterRecord.setToken(null);
         voterRecordRepository.save(voterRecord);
@@ -389,10 +401,27 @@ public class PollService {
         option.setVotes(option.getVotes() + 1);
         optionRepository.save(option);
 
+        VoteUser voteUser = new VoteUser();
+        voteUser.setUser(null);
+        voteUser.setOption(option);
+        voteUser.setPoll(poll);
+
+//        Date date = new Date();
+//        Calendar cal = Calendar.getInstance();
+//        cal.setTime(date);
+//        cal.set(Calendar.HOUR_OF_DAY, 0);
+//        cal.set(Calendar.MINUTE, 0);
+//        cal.set(Calendar.SECOND, 0);
+//        cal.set(Calendar.MILLISECOND, 0);
+//        date = cal.getTime();
+
+        voteUser.setDate(new Date());
+        voteUserRepository.save(voteUser);
+
         VoterRecord voterRecord = new VoterRecord();
         voterRecord.setToken(userToken);
         voterRecord.setUser(null);
-        voterRecord.setPrivate(poll.isPrivate());
+       // voterRecord.setPrivate(poll.isPrivate());
         voterRecord.setPoll(poll);
         voterRecordRepository.save(voterRecord);
 
@@ -447,12 +476,28 @@ public class PollService {
             option.setVotes(option.getVotes() + 1 );
             optionRepository.save(option);
 
+            VoteUser voteUser = new VoteUser();
+            voteUser.setOption(option);
+            voteUser.setPoll(poll);
+
+//            Date date = new Date();
+//            Calendar cal = Calendar.getInstance();
+//            cal.setTime(date);
+//            cal.set(Calendar.HOUR_OF_DAY, 0);
+//            cal.set(Calendar.MINUTE, 0);
+//            cal.set(Calendar.SECOND, 0);
+//            cal.set(Calendar.MILLISECOND, 0);
+//            date = cal.getTime();
+
+            voteUser.setDate(new Date());
+
             if(isPrivate) {
-                VoteUser voteUser = new VoteUser();
-                voteUser.setOption(option);
                 voteUser.setUser((User) userTokenOrUser);
-                voteUserRepository.save(voteUser);
+            } else {
+                voteUser.setUser(null);
             }
+
+            voteUserRepository.save(voteUser);
 
         }
 
@@ -475,7 +520,7 @@ public class PollService {
 //        }
 
         VoterRecord voterRecord = new VoterRecord();
-        voterRecord.setPrivate(poll.isPrivate());
+        //voterRecord.setPrivate(poll.isPrivate());
         voterRecord.setPoll(poll);
         if(poll.isPrivate()) {
             voterRecord.setUser((User) userTokenOrUser);

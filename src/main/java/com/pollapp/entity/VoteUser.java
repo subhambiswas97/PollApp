@@ -1,8 +1,10 @@
 package com.pollapp.entity;
 
 import org.hibernate.engine.internal.Cascade;
+import org.springframework.dao.DataAccessException;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "vote_user")
@@ -13,7 +15,7 @@ public class VoteUser {
     @Column(name="vote_user_id")
     @SequenceGenerator(name="voteUserSequenceGenerator", sequenceName = "voteUserSequence", initialValue = 1,allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "voteUserSequenceGenerator")
-    private Long optionId;
+    private Long voteUserId;
 
 
     @ManyToOne(cascade = CascadeType.ALL , fetch = FetchType.LAZY)
@@ -25,7 +27,22 @@ public class VoteUser {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "poll_id")
+    private Poll poll;
+
+    @Column(name = "vote_date")
+    private Date date;
+
     public VoteUser() {
+    }
+
+    public Long getVoteUserId() {
+        return voteUserId;
+    }
+
+    public void setVoteUserId(Long voteUserId) {
+        this.voteUserId = voteUserId;
     }
 
     public Option getOption() {
@@ -42,5 +59,21 @@ public class VoteUser {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Poll getPoll() {
+        return poll;
+    }
+
+    public void setPoll(Poll poll) {
+        this.poll = poll;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

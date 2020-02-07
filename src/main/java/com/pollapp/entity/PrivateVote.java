@@ -22,7 +22,7 @@ public class PrivateVote implements Serializable {
     private Long userId;
 
     @Id
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "poll_id")
     @JsonIgnoreProperties("privateVotes")
     private Poll poll;

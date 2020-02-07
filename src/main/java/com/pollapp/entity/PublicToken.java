@@ -22,7 +22,7 @@ public class PublicToken implements Serializable {
     private String token;
 
     @Id
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "poll_id")
     //@JsonIgnoreProperties("publicTokens")
     private Poll poll;
