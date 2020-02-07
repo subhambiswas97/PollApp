@@ -82,10 +82,10 @@ public class PollValidator {
 
     }
 
-    public static void checkIfSingleQuestion(Poll poll) throws BadRequestException {
-        if (poll.getQuestions().size() != 1)
-            throw new BadRequestException("Not a single Question Poll");
-    }
+    //public static void checkIfSingleQuestion(Poll poll) throws BadRequestException {
+        //if (poll.getQuestions().size() != 1)
+        //    throw new BadRequestException("Not a single Question Poll");
+    //}
 
     public static void checkOptionQuestionPollSame(String pollId,
                                                    Long questionId,

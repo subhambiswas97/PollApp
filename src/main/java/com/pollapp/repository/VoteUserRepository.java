@@ -10,11 +10,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface VoteUserRepository extends CrudRepository<VoteUser, VoteUserId> {
+public interface VoteUserRepository extends CrudRepository<VoteUser,Long> {
 
-    @Modifying
-    @Query(value = "INSERT INTO vote_user(option_id, user_id) VALUES( ?1 , ?2 )", nativeQuery = true)
-    public int addVoteUser(Long optionId, Long userId);
+    //@Modifying
+    //@Query(value = "INSERT INTO vote_user(option_id, user_id) VALUES( ?1 , ?2 )", nativeQuery = true)
+    //public int addVoteUser(Long optionId, Long userId);
 
 
     public List<VoteUser> findByOptionOptionId(Long optionId);

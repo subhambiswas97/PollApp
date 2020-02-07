@@ -18,9 +18,9 @@ public class Poll {
     @Column(name = "is_private")
     private boolean isPrivate = false;
 
-    @OneToMany(mappedBy = "poll",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("poll")
-    private List<Question> questions;
+//    @OneToMany(mappedBy = "poll",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    @JsonIgnoreProperties("poll")
+//    private List<Question> questions;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -48,13 +48,13 @@ public class Poll {
         this.pollId = pollId;
     }
 
-    public List<Question> getQuestions() {
-        return questions;
-    }
-
-    public void setQuestions(List<Question> questions) {
-        this.questions = questions;
-    }
+//    public List<Question> getQuestions() {
+//        return questions;
+//    }
+//
+//    public void setQuestions(List<Question> questions) {
+//        this.questions = questions;
+//    }
 
     public User getUser() {
         return user;

@@ -7,6 +7,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface OptionRepository extends CrudRepository<Option,Long> {
 
@@ -22,7 +24,7 @@ public interface OptionRepository extends CrudRepository<Option,Long> {
     @Query(value = "UPDATE options o JOIN questions q ON o.question_id = q.question_id SET o.votes=o.votes+1 where o.option_id=?1 AND o.question_id=?2 AND q.poll_id=?3",nativeQuery = true)
     public int updateVoteByQuestionIdAndOptionIdAndPollId(Long optionId, Long questionId, String pollId);
 
-
+    public List<Option> findAllByQuestionQuestionId(Long QuestionId);
 
     //@Query(value = "select * from option ")
     //public Option findByQuestionIdAndOptionId(@Param("question_id") Long questionId,@Param("option_id") Long optionId);

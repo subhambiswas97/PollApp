@@ -5,6 +5,7 @@ import com.pollapp.dto.response.OptionResponseDTO;
 import com.pollapp.entity.Option;
 import com.pollapp.entity.Question;
 import com.pollapp.exception.BadRequestException;
+import com.pollapp.repository.OptionRepository;
 import com.pollapp.service.PollService;
 import com.pollapp.validator.PollValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,10 @@ public class EmbedController {
     @Autowired
     private PollService pollService;
 
+    @Autowired
+    private OptionRepository optionRepository;
+
+
     @GetMapping(value = "embed/poll/{pollId}/{quesId}")
     @CrossOrigin
     public String getQuestion(Model model, @PathVariable("pollId") String pollId, @PathVariable("quesId") Long quesId) {
@@ -39,7 +44,7 @@ public class EmbedController {
             model.addAttribute("question", question.getQuestion());
 
             List<OptionResponseDTO> optionResponseDTOList = new ArrayList<>();
-            List<Option> options = question.getOptions();
+            List<Option> options = optionRepository.findAllByQuestionQuestionId(quesId);
             //log.info("Checkpoint 4 : Count" + options.size());
             Iterator it = options.iterator();
             while (it.hasNext()) {
@@ -67,22 +72,23 @@ public class EmbedController {
     }
 
 
-    @PostMapping(value = "embed/poll/{pollId}/{quesId}")
-    @CrossOrigin
-    public String updateVote(@ModelAttribute("embedDTO") EmbedDTO embedDTO, @PathVariable("pollId") String pollId, @PathVariable("quesId") Long quesId) {
-        try {
-            log.info("Answer Id is" + Long.parseLong(embedDTO.getAnswerId()));
-            log.info("Question Id is " + quesId);
-            PollValidator.validateQuestionId(quesId);
-            pollService.updateVote(quesId, Long.parseLong(embedDTO.getAnswerId()));
-            return "ThankYou.html";
-
-        } catch (Exception e) {
-            log.info(e.toString());
-            return "BackError.html";
-        }
-
-    }
+//    @PostMapping(value = "embed/poll/{pollId}/{quesId}")
+//    @CrossOrigin
+//    public String updateVote(@ModelAttribute("embedDTO") EmbedDTO embedDTO, @PathVariable("pollId") String pollId, @PathVariable("quesId") Long quesId) {
+//        try {
+//            log.info("Answer Id is" + Long.parseLong(embedDTO.getAnswerId()));
+//            log.info("Question Id is " + quesId);
+//            PollValidator.validateQuestionId(quesId);
+//
+//            pollService.updateVote(quesId, Long.parseLong(embedDTO.getAnswerId()));
+//            return "ThankYou.html";
+//
+//        } catch (Exception e) {
+//            log.info(e.toString());
+//            return "BackError.html";
+//        }
+//
+//    }
 
 
 }

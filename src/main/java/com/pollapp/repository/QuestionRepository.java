@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,4 +17,6 @@ public interface QuestionRepository extends CrudRepository<Question,Long> {
 
     @Query(value = "SELECT count(*)  FROM questions q INNER JOIN options o ON o.question_id = q.question_id where o.option_id=?1 and o.question_id=?2", nativeQuery = true)
     public Optional<Object> getOptionQuestionValidation(Long optionId, Long questionId);
+
+    public List<Question> findAllByPollPollId(String pollId);
 }

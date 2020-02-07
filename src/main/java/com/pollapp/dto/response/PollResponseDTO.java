@@ -16,17 +16,13 @@ public class PollResponseDTO {
     private List<QuestionResponsoDTO> questions;
 
     public PollResponseDTO() {
+        this.questions = new ArrayList<>();
     }
 
-    public PollResponseDTO(final Poll poll,boolean isPrivate) {
+    public PollResponseDTO(final Poll poll) {
         this.pollId = poll.getPollId();
         this.isPrivate = poll.isPrivate();
         this.questions = new ArrayList<>();
-        Iterator it = poll.getQuestions().iterator();
-        while (it.hasNext()) {
-            questions.add(new QuestionResponsoDTO((Question) it.next() , isPrivate));
-        }
-
     }
 
     public String getPollId() {
@@ -51,5 +47,9 @@ public class PollResponseDTO {
 
     public void setQuestions(List<QuestionResponsoDTO> questions) {
         this.questions = questions;
+    }
+
+    public void addQuestions(QuestionResponsoDTO questionResponsoDTO) {
+        this.questions.add(questionResponsoDTO);
     }
 }

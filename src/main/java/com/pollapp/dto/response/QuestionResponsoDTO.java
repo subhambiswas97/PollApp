@@ -14,16 +14,13 @@ public class QuestionResponsoDTO {
     private List<OptionResponseDTO> options;
 
     public QuestionResponsoDTO() {
+        this.options = new ArrayList<>();
     }
 
-    public QuestionResponsoDTO(final Question question, boolean isPrivate) {
+    public QuestionResponsoDTO(final Question question) {
         this.questionId = question.getQuestionId();
         this.question = question.getQuestion();
         this.options = new ArrayList<>();
-        Iterator it = question.getOptions().iterator();
-        while (it.hasNext()) {
-            this.options.add(new OptionResponseDTO((Option) it.next() , isPrivate));
-        }
     }
 
     public Long getQuestionId() {
@@ -48,5 +45,9 @@ public class QuestionResponsoDTO {
 
     public void setOptions(List<OptionResponseDTO> options) {
         this.options = options;
+    }
+
+    public void addOptions(OptionResponseDTO optionResponseDTO) {
+        this.options.add(optionResponseDTO);
     }
 }

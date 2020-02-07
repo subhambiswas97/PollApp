@@ -8,6 +8,7 @@ import com.pollapp.dto.response.PollResponseMiniDTO;
 import com.pollapp.dto.response.VoterDTO;
 import com.pollapp.entity.Option;
 import com.pollapp.entity.Poll;
+import com.pollapp.entity.Question;
 import com.pollapp.entity.User;
 import com.pollapp.exception.BadRequestException;
 import com.pollapp.service.PollService;
@@ -62,14 +63,15 @@ public class PollController {
     public ResponseEntity<Object> getPoll(@PathVariable("id") String pollId) {
         try {
             PollValidator.validatePollToken(pollId);
-            Poll poll = pollService.getPoll(pollId);
-            if (poll == null) {
-                return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-            }
+            //Poll poll = pollService.getPoll(pollId);
+            //if (poll == null) {
+            //    return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+            //}
 
             //FOR FETCHING SINGLE QUESTION POLLS
             //PollValidator.checkIfSingleQuestion(poll);
-            PollResponseDTO pollResponseDTO = new PollResponseDTO(poll, false);
+            //PollResponseDTO pollResponseDTO = new PollResponseDTO(poll);
+            PollResponseDTO pollResponseDTO = pollService.getPollResponseDTO(pollId);
             return new ResponseEntity<>(pollResponseDTO, HttpStatus.OK);
         } catch (Exception e) {
             log.info(e.toString());
@@ -90,15 +92,26 @@ public class PollController {
             PollValidator.validatePollToken(pollId);
             PollValidator.validateQuestionId(questionId);
             PollValidator.validateOptionId(optionId);
-            boolean updated = pollService.updateVote(questionId, optionId);
+
+            Option option = pollService.getOption(optionId);
+            if(option == null )
+                return new ResponseEntity<>("Invalid Option Id", HttpStatus.NO_CONTENT);
+            Question question = option.getQuestion();
+            if(question.getQuestionId()!=questionId)
+                return new ResponseEntity<>("Question/Option Id not matching", HttpStatus.BAD_REQUEST);
+            Poll poll = question.getPoll();
+            if(!poll.getPollId().equals(pollId))
+                return new ResponseEntity<>("Poll/Option Id not matching", HttpStatus.BAD_REQUEST);
+
+            boolean updated = pollService.updateVote(question,option);
             if (!updated)
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 
-            Poll poll = pollService.getPoll(pollId);
+            poll = pollService.getPoll(pollId);
             if (poll == null)
                 return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
 
-            PollResponseDTO pollResponseDTO = new PollResponseDTO(poll, false);
+            PollResponseDTO pollResponseDTO = pollService.getPollResponseDTO(poll);
             return new ResponseEntity<>(pollResponseDTO, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -148,7 +161,7 @@ public class PollController {
                 if(user==null)
                     return new ResponseEntity<>("Invalid User Token",HttpStatus.UNAUTHORIZED);
 
-                if(pollService.hasPrivateVoted(poll.getPollId(),user.getId()))
+                if(pollService.hasPrivateVoted(poll.getPollId(),user))
                     return new ResponseEntity<>("Already Voted for this Poll",HttpStatus.FORBIDDEN);
 
                 if(user.getId()==poll.getUser().getId())
@@ -169,7 +182,7 @@ public class PollController {
             poll = pollService.getPoll(pollId);
             if (poll == null)
                 return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-            pollResponseDTO = new PollResponseDTO(poll, false);
+            pollResponseDTO = pollService.getPollResponseDTO(poll);
             return new ResponseEntity<>(pollResponseDTO, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -223,12 +236,16 @@ public class PollController {
                                                    @PathVariable("pollId") String pollId) {
         try {
             PollValidator.validatePollToken(pollId);
-            Poll poll = pollService.getPoll(pollId);
+            //Poll poll = pollService.getPoll(pollId);
             ResponseEntity responseEntity;
-            if (poll == null)
+
+            //PollResponseDTO pollResponseDTO = new PollResponseDTO(poll);
+            PollResponseDTO pollResponseDTO = pollService.getPollResponseDTO(pollId);
+            if (pollResponseDTO == null)
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 
-            boolean isPrivate = poll.isPrivate();
+            //boolean isPrivate = poll.isPrivate();
+            boolean isPrivate = pollResponseDTO.isPrivate();
             if (isPrivate) {
                 if (userToken == null)
                     return new ResponseEntity<>("No userToken Provided for private poll", HttpStatus.UNAUTHORIZED);
@@ -239,7 +256,7 @@ public class PollController {
 
             }
 
-            PollResponseDTO pollResponseDTO = new PollResponseDTO(poll, false);
+
             responseEntity = new ResponseEntity(pollResponseDTO, HttpStatus.OK);
 
             return responseEntity;
@@ -263,12 +280,21 @@ public class PollController {
             PollValidator.validateQuestionId(questionId);
             PollValidator.validateOptionId(optionId);
 
+            Option option = pollService.getOption(optionId);
+            if(option == null )
+                return new ResponseEntity<>("Invalid Option Id", HttpStatus.NO_CONTENT);
+            Question question = option.getQuestion();
+            if(question.getQuestionId()!=questionId)
+                return new ResponseEntity<>("Question/Option Id not matching", HttpStatus.BAD_REQUEST);
+            Poll poll = question.getPoll();
+            if(!poll.getPollId().equals(pollId))
+                return new ResponseEntity<>("Poll/Option Id not matching", HttpStatus.BAD_REQUEST);
+
+            //if (poll == null)
+            //    return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+
             PollResponseDTO pollResponseDTO;
             boolean updated;
-            Poll poll = pollService.getPoll(pollId);
-            if (poll == null)
-                return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-
             boolean isPrivate = poll.isPrivate();
 
             if (isPrivate) {
@@ -282,17 +308,18 @@ public class PollController {
                 if (user.getId() == poll.getUser().getId())
                     throw new BadRequestException("Creator cannot Vote");
 
-                updated = pollService.updateValidatedVote(user, pollId, questionId, optionId);
+                updated = pollService.updateValidatedVote(user, poll, question, option);
 
             } else {
-                updated = pollService.updateVote(questionId, optionId);
+                updated = pollService.updateVote(question, option);
 
             }
 
-            poll = pollService.getPoll(pollId);
-            if (poll == null)
+            //poll = pollService.getPoll(pollId);
+            pollResponseDTO = pollService.getPollResponseDTO(pollId);
+            if (pollResponseDTO == null)
                 return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-            pollResponseDTO = new PollResponseDTO(poll, false);
+
             return new ResponseEntity<>(pollResponseDTO, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -314,12 +341,14 @@ public class PollController {
             PollValidator.validatePollToken(pollId);
             UserValidator.validateUserToken(userToken);
 
-            Poll poll = pollService.getPoll(pollId);
+            //Poll poll = pollService.getPoll(pollId);
+            PollResponseDTO pollResponseDTO = pollService.getPollResponseDTO(pollId);
             ResponseEntity responseEntity;
-            if (poll == null)
+            if (pollResponseDTO == null)
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 
-            boolean isPrivate = poll.isPrivate();
+            //boolean isPrivate = poll.isPrivate();
+            boolean isPrivate = pollResponseDTO.isPrivate();
             if (isPrivate) {
 
                 User user = userService.getUserByToken(userToken);
@@ -327,20 +356,20 @@ public class PollController {
                     return new ResponseEntity<>("Invalid User Token", HttpStatus.UNAUTHORIZED);
 
 
-                if (pollService.hasPrivateVoted(poll.getPollId(), user.getId()))
+                if (pollService.hasPrivateVoted(pollResponseDTO.getPollId(), user))
                     return new ResponseEntity<>("Already Voted for this Poll", HttpStatus.FORBIDDEN);
 
-                PollResponseDTO pollResponseDTO = new PollResponseDTO(poll, false);
+                //PollResponseDTO pollResponseDTO = new PollResponseDTO(poll);
                 responseEntity = new ResponseEntity(pollResponseDTO, HttpStatus.OK);
 
             } else {
 
-                boolean hasVoted = pollService.hasPublicTokenVoted(poll.getPollId(), userToken);
+                boolean hasVoted = pollService.hasPublicTokenVoted(pollResponseDTO.getPollId(), userToken);
 
                 if (hasVoted)
                     return new ResponseEntity<>("Already Voted for this Poll", HttpStatus.FORBIDDEN);
 
-                PollResponseDTO pollResponseDTO = new PollResponseDTO(poll, false);
+                //PollResponseDTO pollResponseDTO = new PollResponseDTO(poll, false);
                 responseEntity = new ResponseEntity(pollResponseDTO, HttpStatus.OK);
             }
             return responseEntity;
@@ -365,11 +394,23 @@ public class PollController {
             PollValidator.validateOptionId(optionId);
             UserValidator.validateUserToken(userToken);
 
+
+            Option option = pollService.getOption(optionId);
+            if(option == null )
+                return new ResponseEntity<>("Invalid Option Id", HttpStatus.NO_CONTENT);
+            Question question = option.getQuestion();
+            if(question.getQuestionId()!=questionId)
+                return new ResponseEntity<>("Question/Option Id not matching", HttpStatus.BAD_REQUEST);
+            Poll poll = question.getPoll();
+            if(!poll.getPollId().equals(pollId))
+                return new ResponseEntity<>("Poll/Option Id not matching", HttpStatus.BAD_REQUEST);
+
+
             PollResponseDTO pollResponseDTO;
             boolean updated;
-            Poll poll = pollService.getPoll(pollId);
-            if (poll == null)
-                return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+            //Poll poll = pollService.getPoll(pollId);
+            //if (poll == null)
+            //    return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
 
             boolean isPrivate = poll.isPrivate();
 
@@ -379,13 +420,13 @@ public class PollController {
                 if (user == null)
                     return new ResponseEntity<>("Invalid User Token", HttpStatus.UNAUTHORIZED);
 
-                if (pollService.hasPrivateVoted(poll.getPollId(), user.getId()))
+                if (pollService.hasPrivateVoted(poll.getPollId(), user))
                     return new ResponseEntity<>("Already Voted for this Poll", HttpStatus.FORBIDDEN);
 
                 if (user.getId() == poll.getUser().getId())
                     throw new BadRequestException("Creator cannot Vote");
 
-                updated = pollService.updateValidatedVote(user, pollId, questionId, optionId);
+                updated = pollService.updateValidatedVote(user, poll, question, option);
 
             } else {
 
@@ -393,13 +434,13 @@ public class PollController {
                 if (hasVoted)
                     return new ResponseEntity<>("Already Voted for this Poll", HttpStatus.FORBIDDEN);
 
-                updated = pollService.updatePublicValidatedVote(userToken,pollId, questionId, optionId);
+                updated = pollService.updatePublicValidatedVote(userToken,poll, question, option);
 
             }
-            poll = pollService.getPoll(pollId);
-            if (poll == null)
+            pollResponseDTO = pollService.getPollResponseDTO(pollId);
+            if (pollResponseDTO == null)
                 return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-            pollResponseDTO = new PollResponseDTO(poll, false);
+            //pollResponseDTO = new PollResponseDTO(poll);
             return new ResponseEntity<>(pollResponseDTO, HttpStatus.OK);
 
 
@@ -435,7 +476,7 @@ public class PollController {
             if (poll.getUser().getId() != user.getId())
                 return new ResponseEntity<>("Poll Belongs to Other Account", HttpStatus.UNAUTHORIZED);
 
-            PollResponseDTO pollResponseDTO = new PollResponseDTO(poll, true);
+            PollResponseDTO pollResponseDTO = pollService.getPollResponseDTO(poll);
 
             return new ResponseEntity<>(pollResponseDTO, HttpStatus.OK);
 
@@ -492,9 +533,11 @@ public class PollController {
             //List<Poll> pollList = user.getPolls();
             List<Poll> pollList = pollService.getUserPolls(user.getId());
             List<PollResponseDTO> pollResponseDTOList = new ArrayList<>();
+            PollResponseDTO pollResponseDTO;
             Iterator it = pollList.iterator();
             while(it.hasNext()) {
-                pollResponseDTOList.add(new PollResponseDTO((Poll) it.next(),false));
+                pollResponseDTO = pollService.getPollResponseDTO((Poll) it.next());
+                pollResponseDTOList.add(pollResponseDTO);
             }
 
             return new ResponseEntity<>(pollResponseDTOList,HttpStatus.OK);
@@ -557,7 +600,7 @@ public class PollController {
             if (poll.isPrivate())
                 return new ResponseEntity<>("Only Public Polls Can be Embedded ", HttpStatus.BAD_REQUEST);
 
-            pollService.setEmbeddedPoll(poll.getPollId(), user.getId());
+            pollService.setEmbeddedPoll(poll, user);
             return new ResponseEntity<>("Success", HttpStatus.OK);
 
 
@@ -589,7 +632,7 @@ public class PollController {
             if (hasVoted)
                 return new ResponseEntity<>("Already Voted for this Poll", HttpStatus.FORBIDDEN);
 
-            PollResponseDTO pollResponseDTO = new PollResponseDTO(poll, false);
+            PollResponseDTO pollResponseDTO = pollService.getPollResponseDTO(poll);
             return new ResponseEntity(pollResponseDTO, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -610,6 +653,15 @@ public class PollController {
             PollValidator.validateQuestionId(questionId);
             PollValidator.validateOptionId(optionId);
             UserValidator.validateUserToken(userToken);
+
+
+            Option option = pollService.getOption(optionId);
+            if(option == null )
+                return new ResponseEntity<>("Invalid Option Id", HttpStatus.NO_CONTENT);
+            Question question = option.getQuestion();
+            if(question.getQuestionId()!=questionId)
+                return new ResponseEntity<>("Question/Option Id not matching", HttpStatus.BAD_REQUEST);
+
             if (userId < 1)
                 throw new BadRequestException("Invalid User Id");
 
@@ -630,14 +682,14 @@ public class PollController {
                 return new ResponseEntity<>("Already Voted for this Poll", HttpStatus.FORBIDDEN);
 
             boolean updated;
-            updated = pollService.updatePublicValidatedVote(userToken,poll.getPollId(), questionId, optionId);
+            updated = pollService.updatePublicValidatedVote(userToken,poll, question, option);
 
             poll = pollService.getPoll(poll.getPollId());
             if (poll == null)
                 return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
 
             PollResponseDTO pollResponseDTO;
-            pollResponseDTO = new PollResponseDTO(poll, false);
+            pollResponseDTO = pollService.getPollResponseDTO(poll);
             return new ResponseEntity<>(pollResponseDTO, HttpStatus.OK);
 
         } catch (Exception e) {

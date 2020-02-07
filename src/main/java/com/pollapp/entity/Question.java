@@ -26,9 +26,9 @@ public class Question {
     @JsonIgnoreProperties("questions")
     private Poll poll;
 
-    @OneToMany(mappedBy = "question",cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("question")
-    private List<Option> options;
+//    @OneToMany(mappedBy = "question",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    @JsonIgnoreProperties("question")
+//    private List<Option> options;
 
     public Question() {
     }
@@ -57,11 +57,11 @@ public class Question {
         this.poll = poll;
     }
 
-    public List<Option> getOptions() {
-        return options;
-    }
-
-    public void setOptions(List<Option> options) {
-        this.options = options;
-    }
+//    public List<Option> getOptions() {
+//        return options;
+//    }
+//
+//    public void setOptions(List<Option> options) {
+//        this.options = options;
+//    }
 }
